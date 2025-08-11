@@ -17,7 +17,8 @@ import WeedWiseHelpPage from "./pages/WeedWiseHelpPage.tsx";
 import WeedWiseResponseTimePage from "./pages/WeedWiseResponseTimePage.tsx";
 import WeedWiseCoverageEfficiencyPage from "./pages/WeedWiseCoverageEfficiencyPage.tsx";
 import WeedDetectionDocs from "./pages/WeedDetectionDocs.tsx";
-import Gallery from "./pages/Gallery.tsx"; // Assuming you have a Gallery page
+import Gallery from "./pages/Gallery.tsx";
+import MediCoAuth from "./pages/MediCoAuth.tsx";
 
 
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/WeedWiseCoverageEfficiencyPage" element={<WeedWiseCoverageEfficiencyPage />} />
           <Route path="/WeedDetectionDocs" element={<WeedDetectionDocs />} />
           <Route path="/Gallery" element={<Gallery />} />
+          <Route path="/MediCoAuth" element={<MediCoAuth />} />
           {/* Add more routes as needed */}
           
 
