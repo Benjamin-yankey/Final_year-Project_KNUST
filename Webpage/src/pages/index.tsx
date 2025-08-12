@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from 'react-router-dom';
+import App from '../App';
+import '../index.css';
+
 
 const Index = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -130,7 +135,8 @@ const Index = () => {
           </div>
 
           {/* Login Integration Point */}
-          <div className="space-y-4">  
+          <div className="space-y-4">
+            
             {/* Alternative: Direct navigation to MediCoAuth page */}
             <Link 
               to="/MediCoAuth" 

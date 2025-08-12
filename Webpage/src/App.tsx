@@ -7,21 +7,18 @@ import Index from "./pages/index";
 import NotFound from "./pages/NotFound";
 import RecentScans from "./pages/RecentScans";
 import React from "react";
-import UploadImagery from "./pages/UploadImagery.tsx";
+import UploadImagery from "./pages/UploadImagery";
 import ExportMap from "./pages/ExportMap";
 import SystemStatus from './pages/SystemStatus';
 import Settings from './pages/Settings';
 import AccuracyPage from './pages/AccuracyPage';
-import FalsePositiveRatePage from "./pages/FalsePositiveRatePage.tsx"; 
-import WeedWiseHelpPage from "./pages/WeedWiseHelpPage.tsx";
-import WeedWiseResponseTimePage from "./pages/WeedWiseResponseTimePage.tsx";
-import WeedWiseCoverageEfficiencyPage from "./pages/WeedWiseCoverageEfficiencyPage.tsx";
-import WeedDetectionDocs from "./pages/WeedDetectionDocs.tsx";
-import Gallery from "./pages/Gallery.tsx";
-import MediCoAuth from "./pages/MediCoAuth.tsx";
-
-
-
+import FalsePositiveRatePage from "./pages/FalsePositiveRatePage"; 
+import WeedWiseHelpPage from "./pages/WeedWiseHelpPage";
+import WeedWiseResponseTimePage from "./pages/WeedWiseResponseTimePage";
+import WeedWiseCoverageEfficiencyPage from "./pages/WeedWiseCoverageEfficiencyPage";
+import WeedDetectionDocs from "./pages/WeedDetectionDocs";
+import Gallery from "./pages/Gallery";
+import MediCoAuth from "./pages/MediCoAuth";
 
 const queryClient = new QueryClient();
 
@@ -34,11 +31,11 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/RecentScans" element={<RecentScans />} />
-           <Route path="/UploadImagery" element={<UploadImagery />} />
-           <Route path="/ExportMap" element={<ExportMap />} />
-          <Route path="/SystemStatus" element={<SystemStatus />} />
-           <Route path="/Settings" element={<Settings />} />
-           <Route path="/AccuracyPage" element={<AccuracyPage />} />
+          <Route path="/UploadImagery" element={<UploadImagery />} />
+          <Route path="/ExportMap" element={<ExportMap />} />
+          <Route path="/system-status" element={<SystemStatus />} />
+          <Route path="/Settings" element={<Settings />} />
+          <Route path="/AccuracyPage" element={<AccuracyPage />} />
           <Route path="/FalsePositiveRatePage" element={<FalsePositiveRatePage />} />
           <Route path="/WeedWiseHelpPage" element={<WeedWiseHelpPage />} />
           <Route path="/WeedWiseResponseTimePage" element={<WeedWiseResponseTimePage />} />
@@ -46,11 +43,6 @@ const App = () => (
           <Route path="/WeedDetectionDocs" element={<WeedDetectionDocs />} />
           <Route path="/Gallery" element={<Gallery />} />
           <Route path="/MediCoAuth" element={<MediCoAuth />} />
-          {/* Add more routes as needed */}
-          
-
-           
-          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

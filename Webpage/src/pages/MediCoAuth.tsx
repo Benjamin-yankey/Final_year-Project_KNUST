@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, CheckCircle, AlertCircle, Facebook, Linkedin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface FormData {
   name: string;
@@ -14,7 +15,30 @@ interface FormErrors {
   [key: string]: string;
 }
 
+const API_URL = "http://localhost:5000";
+
+const registerUser = async (userData: FormData) => {
+  const response = await fetch(`${API_URL}/api/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) throw new Error('Registration failed');
+  return await response.json();
+};
+
+const loginUser = async (email: string, password: string) => {
+  const response = await fetch(`${API_URL}/api/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!response.ok) throw new Error('Login failed');
+  return await response.json();
+};
+
 const MediCoAuth: React.FC = () => {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -103,8 +127,7 @@ const MediCoAuth: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error for this field when user starts typing
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -112,33 +135,26 @@ const MediCoAuth: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
 
     setIsLoading(true);
     setSuccessMessage('');
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setSuccessMessage(isSignUp ? 'Account created successfully!' : 'Welcome back!');
-      
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({
-          name: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          address: '',
-          phone: ''
-        });
-        setSuccessMessage('');
-      }, 2000);
-      
+      const response = isSignUp 
+        ? await registerUser(formData)
+        : await loginUser(formData.email, formData.password);
+
+      if (response.success) {
+        setSuccessMessage(isSignUp ? 'Account created successfully!' : 'Welcome back!');
+        localStorage.setItem('user', JSON.stringify(response.user));
+        if (response.token) localStorage.setItem('token', response.token);
+        setTimeout(() => navigate('/dashboard'), 2000);
+      } else {
+        setErrors({ general: response.message || 'Authentication failed' });
+      }
     } catch (error) {
-      setErrors({ general: 'Something went wrong. Please try again.' });
+      setErrors({ general: error.message || 'Network error. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -201,8 +217,22 @@ const MediCoAuth: React.FC = () => {
                   <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
                     {isSignUp ? 'Create Account' : 'Welcome Back'}
                   </h2>
+
+                  <button 
+  onClick={async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/test`);
+      const data = await response.json();
+      alert(`Backend connection: ${data.message}`);
+    } catch (error) {
+      alert("Backend connection failed");
+    }
+  }}
+  className="mt-4 p-2 bg-blue-100 text-blue-800 rounded"
+>
+  Test Backend Connection
+</button>
                   
-                  {/* Social Login */}
                   <div className="flex justify-center space-x-4 mb-6">
                     <button className="p-3 border border-gray-300 rounded-full hover:bg-green-50 transition-colors">
                       <Facebook className="w-5 h-5 text-green-600" />
@@ -219,7 +249,6 @@ const MediCoAuth: React.FC = () => {
                     or use your email {isSignUp ? 'for registration' : 'and password'}
                   </p>
 
-                  {/* Success Message */}
                   {successMessage && (
                     <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
                       <CheckCircle className="w-5 h-5 mr-2" />
@@ -227,7 +256,6 @@ const MediCoAuth: React.FC = () => {
                     </div>
                   )}
 
-                  {/* General Error */}
                   {errors.general && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
                       <AlertCircle className="w-5 h-5 mr-2" />
@@ -237,7 +265,6 @@ const MediCoAuth: React.FC = () => {
 
                   <form onSubmit={handleSubmit}>
                     <div className="space-y-4">
-                      {/* Name Field */}
                       <div>
                         <div className="relative">
                           <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -255,7 +282,6 @@ const MediCoAuth: React.FC = () => {
                         {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                       </div>
 
-                      {/* Email Field */}
                       <div>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -273,7 +299,6 @@ const MediCoAuth: React.FC = () => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                       </div>
 
-                      {/* Password Field */}
                       <div>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -297,7 +322,6 @@ const MediCoAuth: React.FC = () => {
                         </div>
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                         
-                        {/* Password Strength Indicator */}
                         {isSignUp && formData.password && (
                           <div className="mt-2">
                             <div className="flex items-center space-x-2">
@@ -313,10 +337,8 @@ const MediCoAuth: React.FC = () => {
                         )}
                       </div>
 
-                      {/* Sign Up Additional Fields */}
                       {isSignUp && (
                         <>
-                          {/* Confirm Password */}
                           <div>
                             <div className="relative">
                               <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -341,7 +363,6 @@ const MediCoAuth: React.FC = () => {
                             {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
                           </div>
 
-                          {/* Address */}
                           <div>
                             <div className="relative">
                               <MapPin className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -359,7 +380,6 @@ const MediCoAuth: React.FC = () => {
                             {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                           </div>
 
-                          {/* Phone */}
                           <div>
                             <div className="relative">
                               <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -379,7 +399,6 @@ const MediCoAuth: React.FC = () => {
                         </>
                       )}
 
-                      {/* Forgot Password Link (Sign In Only) */}
                       {!isSignUp && (
                         <div className="text-right">
                           <button
@@ -391,7 +410,6 @@ const MediCoAuth: React.FC = () => {
                         </div>
                       )}
 
-                      {/* Submit Button */}
                       <button
                         type="submit"
                         disabled={isLoading}
@@ -409,7 +427,6 @@ const MediCoAuth: React.FC = () => {
               </div>
             </div>
 
-            {/* Toggle Section */}
             <div className={`flex-1 bg-gradient-to-br from-green-600 to-green-700 text-white flex items-center justify-center transition-all duration-500 ${
               isSignUp ? 'order-1' : 'order-2'
             }`}>
@@ -435,13 +452,13 @@ const MediCoAuth: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="bg-white/90 backdrop-blur-md border-t border-gray-200">
         <div className="text-center py-4 text-gray-600 text-sm">
           © 2024 WeedWise. All rights reserved.
         </div>
       </div>
     </div>
+    
   );
 };
 
