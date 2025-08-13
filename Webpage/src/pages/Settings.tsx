@@ -186,20 +186,31 @@ export default function Settings() {
     onClose: () => void;
   }
 
-  const Toast: React.FC<ToastProps> = ({ show, message, type, onClose }) => {
-    if (!show) return null;
+  const SettingsBody: React.FC = () => {
+    const Toast: React.FC<ToastProps> = ({ show, message, type, onClose }) => {
+      if (!show) return null;
 
-    const getTypeStyles = () => {
-      switch (type) {
-        case "success":
-          return "bg-green-500 text-white";
-        case "error":
-          return "bg-red-500 text-white";
-        case "info":
-          return "bg-blue-500 text-white";
-        default:
-          return "bg-gray-500 text-white";
-      }
+      const getTypeStyles = () => {
+        switch (type) {
+          case "success":
+            return "bg-green-500 text-white";
+          case "error":
+            return "bg-red-500 text-white";
+          case "info":
+            return "bg-blue-500 text-white";
+          default:
+            return "bg-gray-500 text-white";
+        }
+      };
+
+      return (
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg ${getTypeStyles()}`}>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium">{message}</span>
+            <button onClick={onClose} className="text-white/90 hover:text-white">×</button>
+          </div>
+        </div>
+      );
     };
     interface ProgressBarProps {
       value: number;
@@ -1469,4 +1480,5 @@ export default function Settings() {
       </div>
     );
   };
+  return <SettingsBody />;
 }

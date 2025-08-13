@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PageLayout from "@/components/PageLayout";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 
 const AccuracyPage = () => {
@@ -100,19 +101,7 @@ const AccuracyPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-green-600 text-white p-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold">Weed Detection Dashboard</h1>
-            <nav className="flex space-x-6">
-              <a href="/" className="hover:text-green-200 transition-colors">Home</a>
-              <a href="#" className="hover:text-green-200 transition-colors">Gallery</a>
-              <a href="/Settings" className="hover:text-green-200 transition-colors">Settings</a>
-              <a href="#" className="hover:text-green-200 transition-colors">Help</a>
-            </nav>
-          </div>
-        </header>
+    <PageLayout>
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -559,9 +548,8 @@ const AccuracyPage = () => {
     </div>
   </div>
 </footer>
-    </div>
+</PageLayout>
 
-    
   );
 };
 

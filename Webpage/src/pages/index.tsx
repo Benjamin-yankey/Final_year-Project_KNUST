@@ -12,6 +12,7 @@ import {
   useClerk,
 } from "@clerk/clerk-react";
 import App from "../App";
+import PageLayout from "@/components/PageLayout";
 
 import "../index.css";
 
@@ -184,83 +185,7 @@ const Index = () => {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-background">
-        <header className="bg-green-600 text-white p-4">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 className="text-xl font-bold">WeedWise Dashboard</h1>
-
-            {/* Navigation - Responsive */}
-            <nav className="flex flex-wrap justify-center sm:justify-end items-center gap-3 sm:gap-6 text-sm sm:text-base">
-              <a href="/" className="hover:text-green-200 transition-colors">
-                Home
-              </a>
-              <a
-                href="/ExportMap"
-                className="hover:text-green-200 transition-colors"
-              >
-                Map
-              </a>
-              <a
-                href="/Gallery"
-                className="hover:text-green-200 transition-colors"
-              >
-                Gallery
-              </a>
-              <a
-                href="/Settings"
-                className="hover:text-green-200 transition-colors"
-              >
-                Settings
-              </a>
-              <a
-                href="/WeedWiseHelpPage"
-                className="hover:text-green-200 transition-colors"
-              >
-                Help
-              </a>
-
-              {/* User Menu */}
-              <div className="flex items-center gap-2 ml-2 pl-2 border-l border-green-400">
-                {isSignedIn ? (
-                  <>
-                    <span className="hidden sm:inline text-sm">
-                      Welcome, {user.firstName || "User"}
-                    </span>
-                    <UserButton />
-                    <button
-                      onClick={() => {
-                        signOut();
-                        sessionStorage.removeItem("isGuest"); // Clear guest session on logout
-                      }}
-                      className="bg-green-700 hover:bg-green-800 px-3 py-1 rounded text-sm transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <span className="hidden sm:inline text-sm">Guest Mode</span>
-                    <div className="hidden sm:flex items-center text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                      Guest Mode
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        openSignIn({});
-                        sessionStorage.removeItem("isGuest"); // Clear guest session on login
-                      }}
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
-                    >
-                      Sign In
-                    </button>
-                  </>
-                )}
-              </div>
-            </nav>
-          </div>
-        </header>
-
+    <PageLayout>
         {/* Guest Mode Warning Banner */}
         {!isSignedIn && (
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-4 sm:mx-8 mt-4 rounded-r-lg">
@@ -285,12 +210,6 @@ const Index = () => {
                 </div>
               </div>
               <div className="text-right">
-                {/* <a
-                href="/sign-in"
-                className="text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1 rounded-md transition-colors"
-              >
-                Sign In
-              </a> */}
                 <button
                   onClick={() => {
                     openSignIn({});
@@ -462,7 +381,6 @@ const Index = () => {
             </div>
           </div>
         </main>
-      </div>
 
       {/* Footer - Better mobile layout */}
       {/* Professional Footer Component */}
@@ -686,7 +604,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </>
+    </PageLayout>
   );
 };
 

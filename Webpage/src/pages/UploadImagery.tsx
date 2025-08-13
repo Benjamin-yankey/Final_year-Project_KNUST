@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import PageLayout from "@/components/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,22 +137,7 @@ const UploadImagery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-green-600 text-white p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Upload Imagery</h1>
-          <nav className="flex space-x-6">
-            <a href="/" className="hover:text-green-200 transition-colors">Home</a>
-            <a href="/RecentScans" className="hover:text-green-200 transition-colors">Recent Scans</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Map</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Metrics</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Gallery</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Settings</a>
-          </nav>
-        </div>
-      </header>
-
+    <PageLayout>
       {/* Main content */}
       <main className="p-8 max-w-6xl mx-auto">
         <div className="mb-8">
@@ -389,7 +375,7 @@ const UploadImagery = () => {
     </div>
   </div>
 </footer>
-    </div>
+    </PageLayout>
   );
 };
 
