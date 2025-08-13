@@ -1,4 +1,5 @@
 import React from 'react';
+import PageLayout from "@/components/PageLayout";
 
 const SystemStatus = () => {
   const systemStats = {
@@ -17,22 +18,7 @@ const SystemStatus = () => {
   };
 
   return (
-    <div className="min-h-screen bg-green-50 text-gray-800">
-      {/* Header */}
-      <header className="bg-green-600 text-white p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Weed Detection Dashboard</h1>
-          <nav className="flex space-x-6">
-            <a href="/" className="hover:text-green-200 transition-colors">Home</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Map</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Metrics</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Gallery</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Settings</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Help</a>
-          </nav>
-        </div>
-      </header>
-
+    <PageLayout>
       {/* Main */}
       <main className="p-6">
         <h2 className="text-2xl font-semibold mb-6 text-green-800">System Status Overview</h2>
@@ -185,7 +171,7 @@ const SystemStatus = () => {
     </div>
   </div>
 </footer>
-    </div>
+    </PageLayout>
   );
 };
 

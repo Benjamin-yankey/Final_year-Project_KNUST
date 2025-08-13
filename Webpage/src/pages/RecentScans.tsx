@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Download, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import PageLayout from "@/components/PageLayout";
 
 // Mock data for recent scans
 const recentScans = [
@@ -41,22 +42,7 @@ const recentScans = [
 
 const RecentScans = () => {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Green header */}
-      <header className="bg-green-600 text-white p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Weed Detection Dashboard</h1>
-          <nav className="flex space-x-6">
-            <a href="/" className="hover:text-green-200 transition-colors">Home</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Map</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Metrics</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Gallery</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Settings</a>
-            <a href="#" className="hover:text-green-200 transition-colors">Help</a>
-          </nav>
-        </div>
-      </header>
-{/* Main content */}
+    <PageLayout>
 <main className="max-w-5xl mx-auto py-8 px-4 space-y-8">
   <div className="flex justify-end mb-4">
   <Link to="/UploadImagery">
@@ -224,12 +210,8 @@ const RecentScans = () => {
     </div>
   </div>
 </footer>
-    </div>
-    
-    
+    </PageLayout>
   );
-  
-  
 };
 
 export default RecentScans;
