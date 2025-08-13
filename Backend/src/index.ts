@@ -120,7 +120,7 @@ app.get("/health", (req, res) => {
 });
 
 // Routes
-app.use('/api', authRouter);
+// app.use('/api', authRouter);
 
 // Test Endpoint
 app.get("/api/test", (_req: Request, res: Response) => {
@@ -131,12 +131,16 @@ app.get("/api/test", (_req: Request, res: Response) => {
 app.post("/api/register", async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
+    console.log(username," : ", email, " : ", password)
 
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    console.log("username", username, " password", password, " email", email)
+
+
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -146,6 +150,8 @@ app.post("/api/register", async (req: Request, res: Response) => {
     await newUser.save();
 
     const token = generateToken(newUser._id.toString());
+
+    res.cookie("backend-token", token)
 
     res.status(201).json({
       success: true,

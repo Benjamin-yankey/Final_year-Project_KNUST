@@ -3,7 +3,7 @@ import { Eye, EyeOff, User, Mail, Lock, Phone, MapPin, CheckCircle, AlertCircle,
 import { useNavigate } from 'react-router-dom';
 
 interface FormData {
-  name: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword?: string;
@@ -18,9 +18,15 @@ interface FormErrors {
 const API_URL = "http://localhost:5000";
 
 const registerUser = async (userData: FormData) => {
+  console.log("USER DATA: ", userData)
   const response = await fetch(`${API_URL}/api/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem('token') || ''}` // Include token if available
+
+    },
+    credentials: "include",
     body: JSON.stringify(userData),
   });
   if (!response.ok) throw new Error('Registration failed');
@@ -30,7 +36,7 @@ const registerUser = async (userData: FormData) => {
 const loginUser = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/api/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem('token') || ''}` },
     body: JSON.stringify({ email, password }),
   });
   if (!response.ok) throw new Error('Login failed');
@@ -43,7 +49,7 @@ const MediCoAuth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -84,9 +90,9 @@ const MediCoAuth: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) {
+    if (!formData.username.trim()) {
       newErrors.name = 'Name is required';
-    } else if (formData.name.trim().length < 2) {
+    } else if (formData.username.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters';
     }
 
@@ -148,8 +154,12 @@ const MediCoAuth: React.FC = () => {
       if (response.success) {
         setSuccessMessage(isSignUp ? 'Account created successfully!' : 'Welcome back!');
         localStorage.setItem('user', JSON.stringify(response.user));
-        if (response.token) localStorage.setItem('token', response.token);
-        setTimeout(() => navigate('/dashboard'), 2000);
+        if (response.token) {
+          localStorage.setItem('token', response.token)
+          sessionStorage.setItem('token', response.token)
+
+        }
+        setTimeout(() => navigate('/'), 2000);
       } else {
         setErrors({ general: response.message || 'Authentication failed' });
       }
@@ -163,7 +173,7 @@ const MediCoAuth: React.FC = () => {
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
     setFormData({
-      name: '',
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -270,8 +280,8 @@ const MediCoAuth: React.FC = () => {
                           <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                           <input
                             type="text"
-                            name="name"
-                            value={formData.name}
+                            name="username"
+                            value={formData.username}
                             onChange={handleInputChange}
                             placeholder="Full Name"
                             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${

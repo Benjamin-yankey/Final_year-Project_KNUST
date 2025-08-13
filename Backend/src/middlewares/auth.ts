@@ -4,17 +4,30 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("AUTHENTICATING REQUEST", req.headers);
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
+    console.log("AUTH HEADER", authHeader);
+    if (!authHeader?.startsWith('Bearer')) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
+    console.log("AUTH HEADER SPLIT");
     const token = authHeader.split(' ')[1];
+    console.log("TOKEN", token);
     let decoded;
+
+    if(!token){
+      console.log("MISSING TOKEN");
+     return res.status(401).json({ message: 'Missing token' }); 
+    }
+
+    console.log("AUTHENTICATING WITH TOKEN", token);
+
     decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_fallback_secret') as JwtPayload;
 
     // Ensure decoded has the required shape
     if (!decoded.id) {
+      console.log("INVALID TOKEN PAYLOAD", decoded);
       return res.status(401).json({ message: 'Invalid token payload' });
     }
 
