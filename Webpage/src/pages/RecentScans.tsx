@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { getScans } from "@/lib/scanStorage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -168,40 +169,48 @@ const mockScans = [
 ];
 
 const RecentScans = () => {
-  const [scans, setScans] = useState(mockScans);
-  const [filteredScans, setFilteredScans] = useState(mockScans);
+  const [scans, setScans] = useState<any[]>([]);
+  const [filteredScans, setFilteredScans] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedScan, setSelectedScan] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { toast } = useToast();
+  const API_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
-  // Load saved scans from localStorage and prepend to mock data
+  // Load scans from backend with polling
   useEffect(() => {
-    try {
-      const saved = getScans();
-      if (saved && saved.length > 0) {
-        // Map saved scans to the richer table shape by filling defaults
-        const enriched = saved.map((s) => ({
+    let cancelled = false;
+    const fetchScans = async () => {
+      try {
+        const resp = await fetch(`${API_URL}/api/scans`);
+        if (!resp.ok) throw new Error(await resp.text());
+        const json = await resp.json();
+        const rows = (json?.scans || []).map((s: any) => ({
           ...s,
           originalImage: s.imageUrl,
-          totalArea: "N/A",
+          totalArea: s.totalArea || "N/A",
           weedDensity: `${s.weedCount} weeds/m²`,
-          detectionModel: "YOLO (local)",
-          processingTime: s.status === "Completed" ? "~1.0s" : s.status,
-          dominantWeedTypes: [],
-          recommendations: s.weedCount > 50 ? "High weed pressure" : "Normal",
-          uploadedBy: "You",
-          tags: s.status === "Completed" ? ["Completed"] : [s.status],
+          detectionModel: s.detectionModel || "YOLO (local)",
+          processingTime: s.processingTime || (s.status === "Completed" ? "~1.0s" : s.status),
+          dominantWeedTypes: s.dominantWeedTypes || [],
+          recommendations: s.recommendations || (s.weedCount > 50 ? "High weed pressure" : "Normal"),
+          uploadedBy: s.uploadedBy || "You",
+          tags: s.tags || (s.status ? [s.status] : []),
         }));
-        const combined = [...enriched, ...mockScans];
-        setScans(combined);
-        setFilteredScans(combined);
+        if (!cancelled) {
+          setScans(rows);
+          setFilteredScans(rows);
+        }
+      } catch (e: any) {
+        if (!cancelled) toast({ title: "Failed to load scans", description: e?.message || String(e), variant: "destructive" });
       }
-    } catch (e) {
-      // ignore
-    }
-  }, []);
+    };
+    fetchScans();
+    const id = setInterval(fetchScans, 5000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [API_URL, toast]);
 
   // Filter scans based on search and status
   useEffect(() => {

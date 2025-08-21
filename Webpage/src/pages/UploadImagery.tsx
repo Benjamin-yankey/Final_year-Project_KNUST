@@ -107,6 +107,7 @@ const UploadImagery = () => {
       try {
         const formData = new FormData();
         formData.append("image", image.file);
+        if (image.location) formData.append("location", image.location);
 
         const response = await fetch(`${API_URL}/api/detect-image`, {
           method: "POST",
@@ -119,17 +120,19 @@ const UploadImagery = () => {
         }
 
         const data = await response.json();
-        const weedCount = (data?.counts?.weed) ?? (Array.isArray(data?.detections) ? data.detections.filter((d: any) => String(d.label).toLowerCase() === 'weed').length : 0);
+        const weedCount = (data?.weedCount) ?? (data?.counts?.weed) ?? (Array.isArray(data?.detections) ? data.detections.filter((d: any) => String(d.label).toLowerCase() === 'weed').length : 0);
         const annotated = data?.annotated_image_base64 ? `data:image/jpeg;base64,${data.annotated_image_base64}` : image.preview;
-        const accuracy = data?.num_detections > 0 && Array.isArray(data?.detections)
+        const accuracy = data?.accuracy || (data?.num_detections > 0 && Array.isArray(data?.detections)
           ? `${Math.round((data.detections.reduce((acc: number, d: any) => acc + (d.confidence || 0), 0) / data.detections.length) * 100)}%`
-          : "0%";
+          : "0%")
+        
 
         setImages(prev => prev.map((img, idx) =>
           idx === i ? { ...img, processed: true, weedCount, accuracy, preview: annotated } : img
         ));
 
         const now = new Date();
+        // Optimistic local save for offline UX
         saveScan({
           date: now.toISOString().split('T')[0],
           time: now.toTimeString().split(' ')[0].slice(0, 5),
@@ -139,6 +142,26 @@ const UploadImagery = () => {
           status: "Completed",
           accuracy
         });
+        // Persist to backend (best-effort)
+        try {
+          await fetch(`${API_URL}/api/scans`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              date: now.toISOString().split('T')[0],
+              time: now.toTimeString().split(' ')[0].slice(0, 5),
+              location: image.location || "Unknown Location",
+              imageUrl: annotated,
+              weedCount,
+              status: "Completed",
+              accuracy,
+              counts: data?.counts,
+              detections: data?.detections,
+              topLabel: data?.topLabel,
+              topConfidence: data?.topConfidence,
+            })
+          });
+        } catch {}
       } catch (err: any) {
         console.error("Detection error", err);
         toast({ title: "Detection failed", description: err?.message || String(err), variant: "destructive" });

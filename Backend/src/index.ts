@@ -57,7 +57,7 @@ app.options(/.*/, cors({
   optionsSuccessStatus: 204
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "..", "uploads");
@@ -92,6 +92,24 @@ const userSchema = new mongoose.Schema({
 
 const Item = mongoose.model("Item", itemSchema);
 const User = mongoose.model("User", userSchema);
+
+// Scan schema for saving detection results
+const scanSchema = new mongoose.Schema({
+  userId: { type: String },
+  date: { type: String, required: true },
+  time: { type: String, required: true },
+  location: { type: String, default: "Unknown Location" },
+  imageUrl: { type: String, required: true }, // base64 data URL
+  weedCount: { type: Number, default: 0 },
+  status: { type: String, enum: ["Completed", "Processing", "Failed"], default: "Completed" },
+  accuracy: { type: String, default: "0%" },
+  topLabel: { type: String },
+  topConfidence: { type: Number },
+  counts: { type: Map, of: Number },
+  detections: { type: Array },
+}, { timestamps: true });
+
+const Scan = mongoose.model("Scan", scanSchema);
 
 // Helper Functions
 const hashPassword = async (password: string): Promise<string> => {
@@ -180,13 +198,49 @@ const detectImageHandler = async (req: Request, res: Response) => {
     proc.stdout.on("data", (chunk) => { stdoutData += chunk.toString(); });
     proc.stderr.on("data", (chunk) => { stderrData += chunk.toString(); });
 
-    proc.on("close", (code) => {
+    proc.on("close", async (code) => {
       if (code !== 0) {
         return res.status(500).json({ success: false, message: "Inference failed", error: stderrData || stdoutData });
       }
       try {
         const parsed = JSON.parse(stdoutData);
-        return res.json(parsed);
+
+        // Compute summary fields for persistence/display
+        const detections = Array.isArray(parsed?.detections) ? parsed.detections : [];
+        const weedCount = (parsed?.counts?.weed) ?? detections.filter((d: any) => String(d.label).toLowerCase() === 'weed').length;
+        const avgAccuracy = detections.length > 0 ? Math.round((detections.reduce((acc: number, d: any) => acc + (d.confidence || 0), 0) / detections.length) * 100) : 0;
+        const accuracyStr = `${avgAccuracy}%`;
+        const top = detections.reduce((p: any, c: any) => (p && (p.confidence || 0) > (c.confidence || 0)) ? p : c, null);
+        const topLabel = top?.label ?? (Object.keys(parsed?.counts || {})[0] || undefined);
+        const topConfidence = top?.confidence ?? undefined;
+
+        // Optionally persist to DB if connected
+        let savedId: string | undefined;
+        if (mongoose.connection?.readyState === 1) {
+          try {
+            const now = new Date();
+            const scanDoc = await Scan.create({
+              userId: (req as any).user?.id,
+              date: now.toISOString().split('T')[0],
+              time: now.toTimeString().split(' ')[0].slice(0, 5),
+              location: (req.body?.location as string) || "Unknown Location",
+              imageUrl: parsed?.annotated_image_base64 ? `data:image/jpeg;base64,${parsed.annotated_image_base64}` : undefined,
+              weedCount,
+              status: "Completed",
+              accuracy: accuracyStr,
+              topLabel,
+              topConfidence,
+              counts: parsed?.counts || {},
+              detections,
+            });
+            savedId = scanDoc._id.toString();
+          } catch (e) {
+            // Log but do not fail the request
+            console.warn("Failed to persist scan:", e);
+          }
+        }
+
+        return res.json({ ...parsed, weedCount, accuracy: accuracyStr, topLabel, topConfidence, savedId });
       } catch (e) {
         return res.status(500).json({ success: false, message: "Failed to parse inference output", raw: stdoutData, stderr: stderrData });
       }
@@ -200,6 +254,43 @@ const detectImageHandler = async (req: Request, res: Response) => {
 // Image detection endpoints (two paths for compatibility)
 app.post("/api/detect-image", upload.single("image"), detectImageHandler);
 app.post("/pyapi/detect-image", upload.single("image"), detectImageHandler);
+
+// Scans API
+app.get("/api/scans", async (req: Request, res: Response) => {
+  try {
+    const filter: any = {};
+    if (req.query.userId) filter.userId = String(req.query.userId);
+    const scans = await Scan.find(filter).sort({ createdAt: -1 }).limit(500);
+    res.json({ success: true, scans });
+  } catch (err) {
+    console.error("GET /api/scans error:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch scans" });
+  }
+});
+
+app.post("/api/scans", async (req: Request, res: Response) => {
+  try {
+    const body = req.body || {};
+    const scan = await Scan.create({
+      userId: body.userId,
+      date: body.date,
+      time: body.time,
+      location: body.location || "Unknown Location",
+      imageUrl: body.imageUrl,
+      weedCount: body.weedCount || 0,
+      status: body.status || "Completed",
+      accuracy: body.accuracy || "0%",
+      topLabel: body.topLabel,
+      topConfidence: body.topConfidence,
+      counts: body.counts || {},
+      detections: body.detections || [],
+    });
+    res.status(201).json({ success: true, scan });
+  } catch (err) {
+    console.error("POST /api/scans error:", err);
+    res.status(400).json({ success: false, message: "Failed to save scan" });
+  }
+});
 
 // Backwards-compat alias used by some clients
 app.post("/pyapi/detect-image", upload.single("image"), async (req: Request, res: Response, next: NextFunction) => {
