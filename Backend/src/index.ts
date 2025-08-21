@@ -5,6 +5,10 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import authRouter from './routes/protected.route';
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { spawn } from "child_process";
 
 // Initialize express app FIRST
 const app = express();
@@ -24,7 +28,10 @@ declare global {
 // Middlewares
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:3000",
-  "http://localhost:8080"
+  "http://localhost:8080",
+  "http://localhost:5173",
+  "http://127.0.0.1:8080",
+  "http://127.0.0.1:5173"
 ];
 
 app.use(cors({
@@ -36,25 +43,40 @@ app.use(cors({
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+}));
+
+// Explicit preflight handling
+app.options('*', cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 }));
 
 app.use(express.json());
 
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || "";
-if (!MONGODB_URI) {
-  console.error("❌ MONGODB_URI is not set in .env");
-  process.exit(1);
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
+const upload = multer({ dest: uploadsDir });
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch(err => {
-    console.error("❌ Failed to connect to MongoDB:", err);
-    process.exit(1);
-  });
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI;
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch(err => {
+      console.error("❌ Failed to connect to MongoDB:", err);
+    });
+} else {
+  console.warn("⚠️ MONGODB_URI is not set. Starting server without database connection.");
+}
 
 // Schemas and Models
 const itemSchema = new mongoose.Schema({
@@ -115,7 +137,6 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    // environment: config.nodeEnv || "development",
   });
 });
 
@@ -125,6 +146,55 @@ app.get("/health", (req, res) => {
 // Test Endpoint
 app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ status: "Backend is working", timestamp: new Date() });
+});
+
+// Image detection endpoint
+app.post("/api/detect-image", upload.single("image"), async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No image uploaded. Use form field 'image'" });
+    }
+
+    const pythonDefault = "/workspace/Weed-Detection-main/.venv/bin/python";
+    const pythonExec = process.env.PYTHON_EXEC || (fs.existsSync(pythonDefault) ? pythonDefault : "python3");
+
+    const pythonScript = "/workspace/Weed-Detection-main/testing/infer_image.py";
+    const weightsPath = "/workspace/Weed-Detection-main/testing/crop_weed_detection.weights";
+    const configPath = "/workspace/Weed-Detection-main/testing/crop_weed.cfg";
+    const namesPath = "/workspace/Weed-Detection-main/testing/obj.names";
+
+    if (!fs.existsSync(pythonScript)) {
+      return res.status(500).json({ success: false, message: "Inference script not found" });
+    }
+    if (!fs.existsSync(weightsPath)) {
+      return res.status(500).json({ success: false, message: "Weights file missing at testing/crop_weed_detection.weights" });
+    }
+
+    const args = [pythonScript, "--image", req.file.path, "--config", configPath, "--weights", weightsPath, "--names", namesPath];
+
+    const proc = spawn(pythonExec, args, { stdio: ["ignore", "pipe", "pipe"] });
+
+    let stdoutData = "";
+    let stderrData = "";
+
+    proc.stdout.on("data", (chunk) => { stdoutData += chunk.toString(); });
+    proc.stderr.on("data", (chunk) => { stderrData += chunk.toString(); });
+
+    proc.on("close", (code) => {
+      if (code !== 0) {
+        return res.status(500).json({ success: false, message: "Inference failed", error: stderrData || stdoutData });
+      }
+      try {
+        const parsed = JSON.parse(stdoutData);
+        return res.json(parsed);
+      } catch (e) {
+        return res.status(500).json({ success: false, message: "Failed to parse inference output", raw: stdoutData, stderr: stderrData });
+      }
+    });
+  } catch (err) {
+    console.error("/api/detect-image error:", err);
+    return res.status(500).json({ success: false, message: "Server error during detection" });
+  }
 });
 
 // Authentication Routes
