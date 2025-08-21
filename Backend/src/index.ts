@@ -138,6 +138,11 @@ app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ status: "Backend is working", timestamp: new Date() });
 });
 
+// Simple reachability test for detect-image
+app.get("/api/detect-image", (_req: Request, res: Response) => {
+  res.status(200).json({ ok: true, message: "detect-image reachable" });
+});
+
 // AI diagnostics endpoint
 app.get("/api/ai-status", async (_req: Request, res: Response) => {
   try {
@@ -179,6 +184,11 @@ app.get("/api/ai-status", async (_req: Request, res: Response) => {
 // Image detection endpoint
 app.post("/api/detect-image", upload.single("image"), async (req: Request, res: Response) => {
   try {
+    console.log("[POST] /api/detect-image received", {
+      headers: req.headers,
+      file: req.file ? { fieldname: req.file.fieldname, size: req.file.size, mimetype: req.file.mimetype } : null
+    });
+
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No image uploaded. Use form field 'image'" });
     }
@@ -212,6 +222,8 @@ app.post("/api/detect-image", upload.single("image"), async (req: Request, res: 
       "--nms", process.env.YOLO_NMS || "0.45"
     ];
 
+    console.log("Spawning python:", pythonExec, args);
+
     const proc = spawn(pythonExec, args, { stdio: ["ignore", "pipe", "pipe"] });
 
     let stdoutData = "";
@@ -221,6 +233,7 @@ app.post("/api/detect-image", upload.single("image"), async (req: Request, res: 
     proc.stderr.on("data", (chunk) => { stderrData += chunk.toString(); });
 
     proc.on("close", (code) => {
+      console.log("Python exited:", code, { stderr: stderrData.slice(0, 500) });
       if (code !== 0) {
         return res.status(500).json({ success: false, message: "Inference failed", error: stderrData || stdoutData });
       }
