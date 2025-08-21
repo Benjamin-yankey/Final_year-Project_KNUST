@@ -148,8 +148,8 @@ app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ status: "Backend is working", timestamp: new Date() });
 });
 
-// Image detection endpoint
-app.post("/api/detect-image", upload.single("image"), async (req: Request, res: Response) => {
+// Shared detect image handler
+const detectImageHandler = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No image uploaded. Use form field 'image'" });
@@ -192,9 +192,20 @@ app.post("/api/detect-image", upload.single("image"), async (req: Request, res: 
       }
     });
   } catch (err) {
-    console.error("/api/detect-image error:", err);
+    console.error("/detect-image error:", err);
     return res.status(500).json({ success: false, message: "Server error during detection" });
   }
+};
+
+// Image detection endpoints (two paths for compatibility)
+app.post("/api/detect-image", upload.single("image"), detectImageHandler);
+app.post("/pyapi/detect-image", upload.single("image"), detectImageHandler);
+
+// Backwards-compat alias used by some clients
+app.post("/pyapi/detect-image", upload.single("image"), async (req: Request, res: Response, next: NextFunction) => {
+  // Delegate to the primary handler by adjusting the URL path
+  req.url = "/api/detect-image";
+  next();
 });
 
 // Authentication Routes
