@@ -26,6 +26,8 @@ const UploadImagery = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const API_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
+
   // Handle file selection
   const handleFiles = (files: FileList) => {
     const newImages: UploadedImage[] = [];
@@ -99,39 +101,55 @@ const UploadImagery = () => {
 
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
-      
-      // Simulate processing time
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Generate mock results
-      const weedCount = Math.floor(Math.random() * 100) + 1;
-      const accuracy = `${Math.floor(Math.random() * 10) + 90}%`;
-      
-      // Update image with results
-      setImages(prev => prev.map((img, idx) => 
-        idx === i ? { ...img, processed: true, weedCount, accuracy } : img
-      ));
 
-      // Save to local storage
-      const now = new Date();
-      saveScan({
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().split(' ')[0].slice(0, 5),
-        location: image.location || "Unknown Location",
-        imageUrl: image.preview,
-        weedCount,
-        status: "Completed",
-        accuracy
-      });
+      try {
+        const formData = new FormData();
+        formData.append("image", image.file);
 
-      // Update progress
+        const response = await fetch(`${API_URL}/api/detect-image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Detection failed");
+        }
+
+        const data = await response.json();
+        const weedCount = (data?.counts?.weed) ?? (Array.isArray(data?.detections) ? data.detections.filter((d: any) => String(d.label).toLowerCase() === 'weed').length : 0);
+        const annotated = data?.annotated_image_base64 ? `data:image/jpeg;base64,${data.annotated_image_base64}` : image.preview;
+        const accuracy = data?.num_detections > 0 && Array.isArray(data?.detections)
+          ? `${Math.round((data.detections.reduce((acc: number, d: any) => acc + (d.confidence || 0), 0) / data.detections.length) * 100)}%`
+          : "0%";
+
+        setImages(prev => prev.map((img, idx) =>
+          idx === i ? { ...img, processed: true, weedCount, accuracy, preview: annotated } : img
+        ));
+
+        const now = new Date();
+        saveScan({
+          date: now.toISOString().split('T')[0],
+          time: now.toTimeString().split(' ')[0].slice(0, 5),
+          location: image.location || "Unknown Location",
+          imageUrl: annotated,
+          weedCount,
+          status: "Completed",
+          accuracy
+        });
+      } catch (err: any) {
+        console.error("Detection error", err);
+        toast({ title: "Detection failed", description: err?.message || String(err), variant: "destructive" });
+        setImages(prev => prev.map((img, idx) => idx === i ? { ...img, processed: true, weedCount: 0, accuracy: "0%" } : img));
+      }
+
       setProcessingProgress(((i + 1) / images.length) * 100);
     }
 
     setIsProcessing(false);
     toast({
       title: "Processing completed!",
-      description: `Successfully processed ${images.length} image(s).`,
+      description: `Processed ${images.length} image(s).`,
     });
   };
 
