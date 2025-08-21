@@ -8,6 +8,24 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        secure: false,
+        // pass through multipart
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            // leave body streaming for form-data
+          });
+        },
+      },
+      "/health": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
   plugins: [
     react(),
