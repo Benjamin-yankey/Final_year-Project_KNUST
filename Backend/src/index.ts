@@ -138,6 +138,44 @@ app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ status: "Backend is working", timestamp: new Date() });
 });
 
+// AI diagnostics endpoint
+app.get("/api/ai-status", async (_req: Request, res: Response) => {
+  try {
+    const projectRoot = path.resolve(__dirname, '..', '..');
+    const modelDir = process.env.MODEL_DIR || path.join(projectRoot, 'Weed-Detection-main', 'testing');
+    const venvPython = path.join(projectRoot, 'Weed-Detection-main', '.venv', 'bin', 'python');
+    const pythonExec = process.env.PYTHON_EXEC || (fs.existsSync(venvPython) ? venvPython : 'python3');
+
+    const status = {
+      modelDir,
+      pythonExec,
+      files: {
+        infer_script: fs.existsSync(path.join(modelDir, 'infer_image.py')),
+        weights: fs.existsSync(path.join(modelDir, 'crop_weed_detection.weights')),
+        config: fs.existsSync(path.join(modelDir, 'crop_weed.cfg')),
+        names: fs.existsSync(path.join(modelDir, 'obj.names')),
+      },
+      python: { cv2: false, numpy: false }
+    } as any;
+
+    // Probe python packages quickly
+    try {
+      const probe = spawn(pythonExec, ['-c', 'import cv2, numpy; print("ok")'], { stdio: ['ignore', 'pipe', 'pipe'] });
+      let ok = false;
+      probe.stdout.on('data', (c) => { if (c.toString().includes('ok')) ok = true; });
+      probe.on('close', (code) => {
+        status.python.cv2 = ok; // cv2 and numpy imported if ok
+        status.python.numpy = ok;
+        return res.json({ success: true, status });
+      });
+    } catch {
+      return res.json({ success: true, status });
+    }
+  } catch (e: any) {
+    return res.status(500).json({ success: false, error: String(e) });
+  }
+});
+
 // Image detection endpoint
 app.post("/api/detect-image", upload.single("image"), async (req: Request, res: Response) => {
   try {
@@ -164,7 +202,15 @@ app.post("/api/detect-image", upload.single("image"), async (req: Request, res: 
       return res.status(500).json({ success: false, message: `Weights file missing at ${weightsPath}` });
     }
 
-    const args = [pythonScript, "--image", req.file.path, "--config", configPath, "--weights", weightsPath, "--names", namesPath];
+    const args = [
+      pythonScript,
+      "--image", req.file.path,
+      "--config", configPath,
+      "--weights", weightsPath,
+      "--names", namesPath,
+      "--conf", process.env.YOLO_CONF || "0.25",
+      "--nms", process.env.YOLO_NMS || "0.45"
+    ];
 
     const proc = spawn(pythonExec, args, { stdio: ["ignore", "pipe", "pipe"] });
 
