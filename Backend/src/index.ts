@@ -16,6 +16,19 @@ const app = express();
 // Load environment variables
 dotenv.config();
 
+// Force-set CORS headers for all requests (dev only)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Vary", "Origin");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Origin, X-Requested-With");
+  // No credentials in dev to keep it simple
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // Type declaration for Express Request with user
 declare global {
   namespace Express {
@@ -27,8 +40,8 @@ declare global {
 
 // Middlewares
 app.use(cors({
-  origin: true, // reflect the request origin
-  credentials: false, // no cookies sent from browser
+  origin: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   optionsSuccessStatus: 204
