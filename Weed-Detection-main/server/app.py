@@ -2,6 +2,7 @@ import os
 import tempfile
 import json
 import importlib.util
+import traceback
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -23,6 +24,10 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 run_inference = getattr(module, "run_inference")
 
+@app.before_request
+def log_request():
+	app.logger.info(f"{request.method} {request.path} headers={dict(request.headers)}")
+
 @app.get("/api/health")
 def health():
 	return jsonify({"status": "OK"}), 200
@@ -41,20 +46,20 @@ def ai_status():
 
 @app.post("/api/detect-image")
 def detect_image():
-	if "image" not in request.files:
-		return jsonify({"success": False, "message": "No file part 'image'"}), 400
-	file = request.files["image"]
-	if file.filename == "":
-		return jsonify({"success": False, "message": "Empty filename"}), 400
-
-	if not os.path.exists(WEIGHTS_PATH):
-		return jsonify({"success": False, "message": f"Weights not found at {WEIGHTS_PATH}"}), 500
-
-	with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1] or ".jpg") as tmp:
-		file.save(tmp.name)
-		tmp_path = tmp.name
-
 	try:
+		if "image" not in request.files:
+			return jsonify({"success": False, "message": "No file part 'image'"}), 400
+		file = request.files["image"]
+		if file.filename == "":
+			return jsonify({"success": False, "message": "Empty filename"}), 400
+
+		if not os.path.exists(WEIGHTS_PATH):
+			return jsonify({"success": False, "message": f"Weights not found at {WEIGHTS_PATH}"}), 500
+
+		with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1] or ".jpg") as tmp:
+			file.save(tmp.name)
+			tmp_path = tmp.name
+
 		result = run_inference(
 			image_path=tmp_path,
 			config_path=CONFIG_PATH,
@@ -65,10 +70,12 @@ def detect_image():
 		)
 		return jsonify(result), 200
 	except Exception as e:
-		return jsonify({"success": False, "message": "Inference error", "error": str(e)}), 500
+		trace = traceback.format_exc()
+		app.logger.error(f"Inference error: {e}\n{trace}")
+		return jsonify({"success": False, "message": "Inference error", "error": str(e), "trace": trace.splitlines()[-5:]}), 500
 	finally:
 		try:
-			os.remove(tmp_path)
+			os.remove(locals().get('tmp_path', ''))
 		except Exception:
 			pass
 
