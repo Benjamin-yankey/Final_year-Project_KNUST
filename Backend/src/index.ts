@@ -4,13 +4,33 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import authRouter from './routes/protected.route';
+import authRouter from "./routes/protected.route";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { spawn } from "child_process";
 
 // Initialize express app FIRST
 const app = express();
 
 // Load environment variables
 dotenv.config();
+
+// Force-set CORS headers for all requests (dev only)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Vary", "Origin");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Accept, Origin, X-Requested-With"
+  );
+  // No credentials in dev to keep it simple
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 // Type declaration for Express Request with user
 declare global {
@@ -22,51 +42,63 @@ declare global {
 }
 
 // Middlewares
-const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:3000",
-  "http://localhost:8080"
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: true,
+    credentials: false,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "Origin",
+      "X-Requested-With",
+    ],
+    optionsSuccessStatus: 204,
+  })
+);
 
 app.use(express.json());
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+const upload = multer({ dest: uploadsDir });
+
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || "";
-if (!MONGODB_URI) {
-  console.error("❌ MONGODB_URI is not set in .env");
-  process.exit(1);
+const MONGODB_URI = process.env.MONGODB_URI;
+if (MONGODB_URI) {
+  mongoose
+    .connect(MONGODB_URI)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch((err) => {
+      console.error("❌ Failed to connect to MongoDB:", err);
+    });
+} else {
+  console.warn(
+    "⚠️ MONGODB_URI is not set. Starting server without database connection."
+  );
 }
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch(err => {
-    console.error("❌ Failed to connect to MongoDB:", err);
-    process.exit(1);
-  });
-
 // Schemas and Models
-const itemSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: String,
-}, { timestamps: true });
+const itemSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    description: String,
+  },
+  { timestamps: true }
+);
 
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-}, { timestamps: true });
+const userSchema = new mongoose.Schema(
+  {
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+  },
+  { timestamps: true }
+);
 
 const Item = mongoose.model("Item", itemSchema);
 const User = mongoose.model("User", userSchema);
@@ -77,28 +109,36 @@ const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, salt);
 };
 
-const comparePasswords = async (password: string, hashedPassword: string): Promise<boolean> => {
+const comparePasswords = async (
+  password: string,
+  hashedPassword: string
+): Promise<boolean> => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
 const generateToken = (userId: string): string => {
-  return jwt.sign(
-    { id: userId },
-    process.env.JWT_SECRET || "fallback_secret",
-    { expiresIn: "1h" }
-  );
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET || "fallback_secret", {
+    expiresIn: "1h",
+  });
 };
 
 // Authentication Middleware
-const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+const authenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       return res.status(401).json({ message: "No token provided" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
-    
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback_secret"
+    );
+
     // Type guard
     if (typeof decoded === "string") {
       throw new Error("Invalid token format");
@@ -115,7 +155,6 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    // environment: config.nodeEnv || "development",
   });
 });
 
@@ -127,18 +166,201 @@ app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ status: "Backend is working", timestamp: new Date() });
 });
 
+// Simple reachability test for detect-image
+app.get("/api/detect-image", (_req: Request, res: Response) => {
+  res.status(200).json({ ok: true, message: "detect-image reachable" });
+});
+
+// AI diagnostics endpoint
+app.get("/api/ai-status", async (_req: Request, res: Response) => {
+  try {
+    const projectRoot = path.resolve(__dirname, "..", "..");
+    const modelDir =
+      process.env.MODEL_DIR ||
+      path.join(projectRoot, "Weed-Detection-main", "testing");
+    const venvPython = path.join(
+      projectRoot,
+      "Weed-Detection-main",
+      ".venv",
+      "bin",
+      "python"
+    );
+    const pythonExec =
+      process.env.PYTHON_EXEC ||
+      (fs.existsSync(venvPython) ? venvPython : "python3");
+
+    const status = {
+      modelDir,
+      pythonExec,
+      files: {
+        infer_script: fs.existsSync(path.join(modelDir, "infer_image.py")),
+        weights: fs.existsSync(
+          path.join(modelDir, "crop_weed_detection.weights")
+        ),
+        config: fs.existsSync(path.join(modelDir, "crop_weed.cfg")),
+        names: fs.existsSync(path.join(modelDir, "obj.names")),
+      },
+      python: { cv2: false, numpy: false },
+    } as any;
+
+    // Probe python packages quickly
+    try {
+      const probe = spawn(
+        pythonExec,
+        ["-c", 'import cv2, numpy; print("ok")'],
+        { stdio: ["ignore", "pipe", "pipe"] }
+      );
+      let ok = false;
+      probe.stdout.on("data", (c) => {
+        if (c.toString().includes("ok")) ok = true;
+      });
+      probe.on("close", (code) => {
+        status.python.cv2 = ok; // cv2 and numpy imported if ok
+        status.python.numpy = ok;
+        return res.json({ success: true, status });
+      });
+    } catch {
+      return res.json({ success: true, status });
+    }
+  } catch (e: any) {
+    return res.status(500).json({ success: false, error: String(e) });
+  }
+});
+
+// Image detection endpoint
+app.post(
+  "/api/detect-image",
+  upload.single("image"),
+  async (req: Request, res: Response) => {
+    try {
+      console.log("[POST] /api/detect-image received", {
+        headers: req.headers,
+        file: req.file
+          ? {
+              fieldname: req.file.fieldname,
+              size: req.file.size,
+              mimetype: req.file.mimetype,
+            }
+          : null,
+      });
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No image uploaded. Use form field 'image'",
+        });
+      }
+
+      // Resolve paths relative to monorepo root
+      const projectRoot = path.resolve(__dirname, "..", "..");
+      const modelDir =
+        process.env.MODEL_DIR ||
+        path.join(projectRoot, "Weed-Detection-main", "testing");
+
+      const venvPython = path.join(
+        projectRoot,
+        "Weed-Detection-main",
+        ".venv",
+        "bin",
+        "python"
+      );
+      const pythonExec =
+        process.env.PYTHON_EXEC ||
+        (fs.existsSync(venvPython) ? venvPython : "python3");
+
+      const pythonScript = path.join(modelDir, "infer_image.py");
+      const weightsPath = path.join(modelDir, "crop_weed_detection.weights");
+      const configPath = path.join(modelDir, "crop_weed.cfg");
+      const namesPath = path.join(modelDir, "obj.names");
+
+      if (!fs.existsSync(pythonScript)) {
+        return res.status(500).json({
+          success: false,
+          message: `Inference script not found at ${pythonScript}`,
+        });
+      }
+      if (!fs.existsSync(weightsPath)) {
+        return res.status(500).json({
+          success: false,
+          message: `Weights file missing at ${weightsPath}`,
+        });
+      }
+
+      const args = [
+        pythonScript,
+        "--image",
+        req.file.path,
+        "--config",
+        configPath,
+        "--weights",
+        weightsPath,
+        "--names",
+        namesPath,
+        "--conf",
+        process.env.YOLO_CONF || "0.25",
+        "--nms",
+        process.env.YOLO_NMS || "0.45",
+      ];
+
+      console.log("Spawning python:", pythonExec, args);
+
+      const proc = spawn(pythonExec, args, {
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+
+      let stdoutData = "";
+      let stderrData = "";
+
+      proc.stdout.on("data", (chunk) => {
+        stdoutData += chunk.toString();
+      });
+      proc.stderr.on("data", (chunk) => {
+        stderrData += chunk.toString();
+      });
+
+      proc.on("close", (code) => {
+        console.log("Python exited:", code, {
+          stderr: stderrData.slice(0, 500),
+        });
+        if (code !== 0) {
+          return res.status(500).json({
+            success: false,
+            message: "Inference failed",
+            error: stderrData || stdoutData,
+          });
+        }
+        try {
+          const parsed = JSON.parse(stdoutData);
+          return res.json(parsed);
+        } catch (e) {
+          return res.status(500).json({
+            success: false,
+            message: "Failed to parse inference output",
+            raw: stdoutData,
+            stderr: stderrData,
+          });
+        }
+      });
+    } catch (err) {
+      console.error("/api/detect-image error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Server error during detection" });
+    }
+  }
+);
+
 // Authentication Routes
 app.post("/api/register", async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
-    console.log(username," : ", email, " : ", password)
+    console.log(username, " : ", email, " : ", password);
 
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    console.log("username", username, " password", password, " email", email)
-
+    console.log("username", username, " password", password, " email", email);
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -151,16 +373,16 @@ app.post("/api/register", async (req: Request, res: Response) => {
 
     const token = generateToken(newUser._id.toString());
 
-    res.cookie("backend-token", token)
+    res.cookie("backend-token", token);
 
     res.status(201).json({
       success: true,
       user: {
         id: newUser._id,
         username: newUser.username,
-        email: newUser.email
+        email: newUser.email,
       },
-      token
+      token,
     });
   } catch (err) {
     console.error("Registration error:", err);
@@ -173,7 +395,9 @@ app.post("/api/login", async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
@@ -193,9 +417,9 @@ app.post("/api/login", async (req: Request, res: Response) => {
       user: {
         id: user._id,
         username: user.username,
-        email: user.email
+        email: user.email,
       },
-      token
+      token,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -226,4 +450,6 @@ app.post("/api/items", authenticate, async (req: Request, res: Response) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
