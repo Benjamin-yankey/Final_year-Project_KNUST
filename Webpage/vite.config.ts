@@ -13,12 +13,15 @@ export default defineConfig(({ mode }) => ({
         target: "http://localhost:5000",
         changeOrigin: true,
         secure: false,
-        // pass through multipart
         configure: (proxy) => {
-          proxy.on("proxyReq", (proxyReq) => {
-            // leave body streaming for form-data
-          });
+          proxy.on("proxyReq", (proxyReq) => {});
         },
+      },
+      "/pyapi": {
+        target: "http://localhost:5001",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/pyapi/, "/api"),
       },
       "/health": {
         target: "http://localhost:5000",

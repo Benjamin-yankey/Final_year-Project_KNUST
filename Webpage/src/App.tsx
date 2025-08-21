@@ -20,6 +20,7 @@ import Gallery from "./pages/Gallery";
 import MediCoAuth from "./pages/MediCoAuth";
 import Clerk from "./pages/clerk";
 import Settings from "./pages/Settings";
+import AIStatus from "./pages/AIStatus";
 
 const queryClient = new QueryClient();
 
@@ -51,8 +52,8 @@ const App = () => (
         <Route path="/Settings" element={<Settings />} />
         <Route path="/WeedDetectionDocs" element={<WeedDetectionDocs />} />
         <Route path="/Gallery" element={<Gallery />} />
-        {/* <Route path="/MediCoAuth" element={<MediCoAuth />} /> */}
         <Route path="/clerk" element={<Clerk />} />
+        <Route path="/ai-status" element={<AIStatus />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </TooltipProvider>

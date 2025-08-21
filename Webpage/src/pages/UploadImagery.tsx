@@ -106,7 +106,7 @@ const UploadImagery = () => {
         const formData = new FormData();
         formData.append("image", image.file);
 
-        const response = await fetch(`${API_URL}/api/detect-image`, {
+        const response = await fetch(`${API_URL}/pyapi/detect-image`, {
           method: "POST",
           body: formData,
         });
@@ -117,6 +117,10 @@ const UploadImagery = () => {
         }
 
         const data = await response.json();
+        if (!data?.success) {
+          throw new Error(data?.message || "Model inference failed");
+        }
+
         const weedCount = (data?.counts?.weed) ?? (Array.isArray(data?.detections) ? data.detections.filter((d: any) => String(d.label).toLowerCase() === 'weed').length : 0);
         const annotated = data?.annotated_image_base64 ? `data:image/jpeg;base64,${data.annotated_image_base64}` : image.preview;
         const accuracy = data?.num_detections > 0 && Array.isArray(data?.detections)
@@ -140,7 +144,7 @@ const UploadImagery = () => {
       } catch (err: any) {
         console.error("Detection error", err);
         toast({ title: "Detection failed", description: err?.message || String(err), variant: "destructive" });
-        setImages(prev => prev.map((img, idx) => idx === i ? { ...img, processed: true, weedCount: 0, accuracy: "0%" } : img));
+        setImages(prev => prev.map((img, idx) => idx === i ? { ...img, processed: true, weedCount: undefined, accuracy: undefined } : img));
       }
 
       setProcessingProgress(((i + 1) / images.length) * 100);
