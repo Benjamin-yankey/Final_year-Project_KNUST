@@ -34,7 +34,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5173"
 ];
 
-app.use(cors({
+const corsOptions: cors.CorsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -44,18 +44,11 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   optionsSuccessStatus: 204
-}));
+};
 
-// Explicit preflight handling
-app.options('*', cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 204
-}));
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -155,19 +148,23 @@ app.post("/api/detect-image", upload.single("image"), async (req: Request, res: 
       return res.status(400).json({ success: false, message: "No image uploaded. Use form field 'image'" });
     }
 
-    const pythonDefault = "/workspace/Weed-Detection-main/.venv/bin/python";
-    const pythonExec = process.env.PYTHON_EXEC || (fs.existsSync(pythonDefault) ? pythonDefault : "python3");
+    // Resolve paths relative to monorepo root
+    const projectRoot = path.resolve(__dirname, '..', '..');
+    const modelDir = process.env.MODEL_DIR || path.join(projectRoot, 'Weed-Detection-main', 'testing');
 
-    const pythonScript = "/workspace/Weed-Detection-main/testing/infer_image.py";
-    const weightsPath = "/workspace/Weed-Detection-main/testing/crop_weed_detection.weights";
-    const configPath = "/workspace/Weed-Detection-main/testing/crop_weed.cfg";
-    const namesPath = "/workspace/Weed-Detection-main/testing/obj.names";
+    const venvPython = path.join(projectRoot, 'Weed-Detection-main', '.venv', 'bin', 'python');
+    const pythonExec = process.env.PYTHON_EXEC || (fs.existsSync(venvPython) ? venvPython : 'python3');
+
+    const pythonScript = path.join(modelDir, 'infer_image.py');
+    const weightsPath = path.join(modelDir, 'crop_weed_detection.weights');
+    const configPath = path.join(modelDir, 'crop_weed.cfg');
+    const namesPath = path.join(modelDir, 'obj.names');
 
     if (!fs.existsSync(pythonScript)) {
-      return res.status(500).json({ success: false, message: "Inference script not found" });
+      return res.status(500).json({ success: false, message: `Inference script not found at ${pythonScript}` });
     }
     if (!fs.existsSync(weightsPath)) {
-      return res.status(500).json({ success: false, message: "Weights file missing at testing/crop_weed_detection.weights" });
+      return res.status(500).json({ success: false, message: `Weights file missing at ${weightsPath}` });
     }
 
     const args = [pythonScript, "--image", req.file.path, "--config", configPath, "--weights", weightsPath, "--names", namesPath];
