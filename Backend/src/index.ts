@@ -48,8 +48,8 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Explicit preflight handling
-app.options('*', cors({
+// Explicit preflight handling (Express 5: avoid '*' string, use regex)
+app.options(/.*/, cors({
   origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

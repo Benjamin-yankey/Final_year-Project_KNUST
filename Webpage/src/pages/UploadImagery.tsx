@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ const UploadImagery = () => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const API_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:5000";
 
@@ -151,6 +153,7 @@ const UploadImagery = () => {
       title: "Processing completed!",
       description: `Processed ${images.length} image(s).`,
     });
+    navigate("/RecentScans");
   };
 
   return (

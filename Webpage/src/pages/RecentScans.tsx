@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getScans } from "@/lib/scanStorage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -174,6 +175,33 @@ const RecentScans = () => {
   const [selectedScan, setSelectedScan] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Load saved scans from localStorage and prepend to mock data
+  useEffect(() => {
+    try {
+      const saved = getScans();
+      if (saved && saved.length > 0) {
+        // Map saved scans to the richer table shape by filling defaults
+        const enriched = saved.map((s) => ({
+          ...s,
+          originalImage: s.imageUrl,
+          totalArea: "N/A",
+          weedDensity: `${s.weedCount} weeds/m²`,
+          detectionModel: "YOLO (local)",
+          processingTime: s.status === "Completed" ? "~1.0s" : s.status,
+          dominantWeedTypes: [],
+          recommendations: s.weedCount > 50 ? "High weed pressure" : "Normal",
+          uploadedBy: "You",
+          tags: s.status === "Completed" ? ["Completed"] : [s.status],
+        }));
+        const combined = [...enriched, ...mockScans];
+        setScans(combined);
+        setFilteredScans(combined);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   // Filter scans based on search and status
   useEffect(() => {
