@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeedWise Help Center</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --green-50: #f0fdf4;
+        --green-100: #dcfce7;
+        --green-500: #22c55e;
+        --green-600: #16a34a;
+        --green-700: #15803d;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --white: #ffffff;
+        --black: #000000;
+        --yellow-400: #fbbf24;
+        --red-600: #dc2626;
+      }
+
+      .dark-mode {
+        --bg-primary: var(--gray-900);
+        --bg-secondary: var(--gray-800);
+        --bg-tertiary: var(--gray-700);
+        --text-primary: var(--white);
+        --text-secondary: var(--gray-300);
+        --text-tertiary: var(--gray-400);
+        --border-color: var(--gray-700);
+      }
+
+      .light-mode {
+        --bg-primary: var(--green-50);
+        --bg-secondary: var(--white);
+        --bg-tertiary: var(--gray-100);
+        --text-primary: var(--gray-900);
+        --text-secondary: var(--gray-600);
+        --text-tertiary: var(--gray-500);
+        --border-color: var(--gray-200);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      /* Navigation */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 4rem;
+      }
+
+      .nav-items {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .help-center-badge {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        background-color: var(--bg-tertiary);
+        color: var(--text-secondary);
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        background-color: transparent;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .nav-button:hover {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+
+      .theme-toggle {
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .theme-toggle:hover {
+        background-color: var(--border-color);
+      }
+
+      /* Main content */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        font-size: 2.25rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .header p {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 42rem;
+        margin: 0 auto;
+      }
+
+      /* Search bar */
+      .search-container {
+        max-width: 42rem;
+        margin: 0 auto 3rem;
+      }
+
+      .search-box {
+        position: relative;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-tertiary);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border-radius: 0.75rem;
+        border: 2px solid var(--border-color);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      /* Grid layout */
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      @media (min-width: 1024px) {
+        .grid {
+          grid-template-columns: 2fr 1fr;
+        }
+      }
+
+      /* Cards */
+      .card {
+        background-color: var(--bg-secondary);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-icon {
+        margin-right: 0.5rem;
+        color: var(--green-500);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      /* FAQ items */
+      .faq-item {
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+
+      .faq-question {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background-color: transparent;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .faq-question:hover {
+        background-color: var(--bg-tertiary);
+      }
+
+      .faq-content {
+        display: flex;
+        flex: 1;
+      }
+
+      .faq-category {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        background-color: var(--bg-tertiary);
+        color: var(--text-secondary);
+        margin-right: 0.75rem;
+      }
+
+      .faq-text {
+        font-weight: 500;
+      }
+
+      .faq-answer {
+        padding: 0 1.5rem 1.5rem;
+        color: var(--text-secondary);
+        line-height: 1.625;
+      }
+
+      .faq-feedback {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .faq-feedback-text {
+        font-size: 0.875rem;
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .star-button {
+        color: var(--text-tertiary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .star-button:hover {
+        color: var(--yellow-400);
+      }
+
+      /* Video section */
+      .video-container {
+        aspect-ratio: 16/9;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background-color: var(--bg-tertiary);
+        margin-bottom: 1rem;
+      }
+
+      .video-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* Form elements */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      @media (min-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+      }
+
+      .form-input,
+      .form-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+
+      .form-input:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 6rem;
+      }
+
+      .submit-button {
+        width: 100%;
+        background: linear-gradient(
+          to right,
+          var(--green-500),
+          var(--green-600)
+        );
+        color: var(--white);
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .submit-button:hover {
+        background: linear-gradient(
+          to right,
+          var(--green-600),
+          var(--green-700)
+        );
+      }
+
+      .submit-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .spinner {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid transparent;
+        border-top: 2px solid var(--white);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .status-message {
+        text-align: center;
+        padding: 0.5rem 0;
+        animation: fadeIn 0.2s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .success {
+        color: var(--green-600);
+      }
+
+      .error {
+        color: var(--red-600);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .sidebar-card {
+        background-color: var(--bg-secondary);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+      }
+
+      .sidebar-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .sidebar-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .sidebar-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        background-color: var(--bg-tertiary);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .sidebar-button:hover {
+        background-color: var(--border-color);
+        color: var(--text-primary);
+      }
+
+      .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .contact-icon {
+        color: var(--green-500);
+      }
+
+      .support-hours {
+        font-size: 0.875rem;
+        color: var(--text-tertiary);
+      }
+
+      /* Chat widget */
+      .chat-button {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        width: 3.5rem;
+        height: 3.5rem;
+        background: linear-gradient(
+          to right,
+          var(--green-500),
+          var(--green-600)
+        );
+        color: var(--white);
+        border: none;
+        border-radius: 9999px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        z-index: 40;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
+      }
+
+      .chat-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .chat-window {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        width: 20rem;
+        height: 24rem;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        z-index: 50;
+      }
+
+      .chat-header {
+        background: linear-gradient(
+          to right,
+          var(--green-500),
+          var(--green-600)
+        );
+        color: var(--white);
+        padding: 1rem;
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .chat-header-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .chat-avatar {
+        width: 2rem;
+        height: 2rem;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 9999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-title {
+        font-weight: 600;
+      }
+
+      .chat-subtitle {
+        font-size: 0.75rem;
+        opacity: 0.9;
+      }
+
+      .chat-close {
+        color: rgba(255, 255, 255, 0.8);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem;
+      }
+
+      .chat-close:hover {
+        color: var(--white);
+      }
+
+      .chat-body {
+        flex: 1;
+        padding: 1rem;
+        background-color: var(--bg-tertiary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-message {
+        text-align: center;
+        color: var(--text-tertiary);
+        font-size: 0.875rem;
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--gray-900);
+        color: var(--gray-200);
+        padding: 3rem 1rem;
+        border-top: 1px solid var(--gray-800);
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        margin-bottom: 3rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .footer-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo {
+        color: var(--green-400);
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .footer-brand-name {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: var(--white);
+      }
+
+      .footer-description {
+        font-size: 0.875rem;
+        line-height: 1.625;
+        margin-bottom: 1rem;
+      }
+
+      .footer-social {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .footer-social-link {
+        color: var(--gray-400);
+        transition: color 0.2s;
+      }
+
+      .footer-social-link:hover {
+        color: var(--green-400);
+      }
+
+      .footer-heading {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--white);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+      }
+
+      .footer-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .footer-link a {
+        color: var(--gray-400);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .footer-link a:hover {
+        color: var(--green-400);
+      }
+
+      .footer-newsletter p {
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .footer-input {
+        padding: 0.5rem 1rem;
+        background-color: var(--gray-800);
+        border: 1px solid var(--gray-700);
+        border-radius: 0.375rem;
+        color: var(--white);
+      }
+
+      .footer-input:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      .footer-button {
+        padding: 0.5rem 1rem;
+        background-color: var(--green-600);
+        color: var(--white);
+        font-weight: 500;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .footer-button:hover {
+        background-color: var(--green-700);
+      }
+
+      .footer-bottom {
+        padding-top: 2rem;
+        border-top: 1px solid var(--gray-800);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-bottom {
+          flex-direction: row;
+        }
+      }
+
+      .footer-copyright {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+      }
+
+      .footer-legal {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .footer-legal-link {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .footer-legal-link:hover {
+        color: var(--green-400);
+      }
+
+      /* Utility classes */
+      .hidden {
+        display: none;
+      }
+
+      .slide-in {
+        animation: slideIn 0.2s;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="light-mode">
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-container">
+        <div class="nav-items">
+          <span class="help-center-badge">Help Center</span>
+        </div>
+        <div class="nav-items">
+          <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+          </button>
+          <a href="/" class="nav-button">
+            <i class="fas fa-home"></i>
+            <span class="hidden-mobile">Home</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>How can we help you today?</h1>
+        <p>
+          Get answers to common questions about WeedWise and learn how to
+          maximize your crop protection
+        </p>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="text"
+            placeholder="Search for help articles, features, or troubleshooting..."
+            class="search-input"
+            id="searchInput"
+          />
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- FAQ Section -->
+          <section class="card">
+            <div class="card-header">
+              <i class="fas fa-question-circle card-icon"></i>
+              <h2 class="card-title">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="faq-list" id="faqList">
+              <!-- FAQ items will be dynamically inserted here -->
+            </div>
+
+            <div class="no-results hidden" id="noResults">
+              <div class="text-center py-12">
+                <i
+                  class="fas fa-search fa-3x mb-4 text-gray-300 dark:text-gray-600"
+                ></i>
+                <p class="text-lg text-gray-500 dark:text-gray-400">
+                  No results found for "<span id="searchTerm"></span>"
+                </p>
+                <p class="text-gray-400 dark:text-gray-500 mt-2">
+                  Try different keywords or browse all FAQs
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Video Tutorial Section -->
+          <section class="card">
+            <h2 class="card-title mb-6">Video Tutorials</h2>
+            <div class="video-container">
+              <iframe
+                class="video-iframe"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                title="WeedWise Tutorial"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <div class="mt-4">
+              <h3 class="font-semibold">Getting Started with WeedWise</h3>
+              <p class="text-secondary mt-1">
+                Learn the basics of setting up your farm profile and running
+                your first weed detection scan.
+              </p>
+            </div>
+          </section>
+
+          <!-- Contact Form -->
+          <section class="card">
+            <div class="card-header">
+              <i class="fas fa-envelope card-icon"></i>
+              <h2 class="card-title">Contact Support</h2>
+            </div>
+
+            <form id="contactForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    class="form-input"
+                    placeholder="Your full name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea
+                  name="message"
+                  rows="4"
+                  class="form-textarea"
+                  placeholder="Describe your issue or question in detail..."
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" class="submit-button" id="submitButton">
+                <i class="fas fa-paper-plane mr-2"></i>
+                Send Message
+              </button>
+
+              <div class="status-message success hidden" id="successMessage">
+                ✅ Message sent successfully! We'll get back to you within 24
+                hours.
+              </div>
+
+              <div class="status-message error hidden" id="errorMessage">
+                Failed to send message. Please try again or contact us directly.
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- Quick Actions -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">Quick Actions</h3>
+            <div class="sidebar-actions">
+              <a href="#" class="sidebar-button">
+                <i class="fas fa-camera"></i>
+                <span>Start Detection</span>
+              </a>
+              <a href="#" class="sidebar-button">
+                <i class="fas fa-upload"></i>
+                <span>Upload Dataset</span>
+              </a>
+              <a href="#" class="sidebar-button">
+                <i class="fas fa-chart-bar"></i>
+                <span>View Reports</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Contact Info -->
+          <div class="sidebar-card">
+            <h3 class="sidebar-title">Need More Help?</h3>
+            <div class="contact-info">
+              <div class="contact-item">
+                <i class="fas fa-phone contact-icon"></i>
+                <span>+233 (240) 061-132</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-envelope contact-icon"></i>
+                <span>support@weedwise.com</span>
+              </div>
+              <div class="support-hours">
+                <p>Support Hours:</p>
+                <p>Mon-Fri: 8AM-6PM GMT</p>
+                <p>Sat-Sun: 9AM-3PM GMT</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Live Chat Widget -->
+    <button class="chat-button" id="openChat">
+      <i class="fas fa-comment"></i>
+    </button>
+
+    <div class="chat-window hidden" id="chatWindow">
+      <div class="chat-header">
+        <div class="chat-header-content">
+          <div class="chat-avatar">
+            <i class="fas fa-comment"></i>
+          </div>
+          <div>
+            <div class="chat-title">Live Support</div>
+            <div class="chat-subtitle">Usually responds in minutes</div>
+          </div>
+        </div>
+        <button class="chat-close" id="closeChat">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="chat-body">
+        <div class="chat-message">
+          Chat widget coming soon! For now, please use the contact form above.
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-container">
+        <div class="footer-grid">
+          <!-- Company Info -->
+          <div>
+            <div class="footer-brand">
+              <svg class="footer-logo" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="footer-brand-name">WeedWise</span>
+            </div>
+            <p class="footer-description">
+              Advanced weed detection and agricultural analytics platform
+              helping farmers optimize crop yields through AI-powered solutions.
+            </p>
+            <div class="footer-social">
+              <a href="#" aria-label="Twitter" class="footer-social-link">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" aria-label="Facebook" class="footer-social-link">
+                <i class="fab fa-facebook"></i>
+              </a>
+              <a href="#" aria-label="LinkedIn" class="footer-social-link">
+                <i class="fab fa-linkedin"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div>
+            <h3 class="footer-heading">Quick Links</h3>
+            <ul class="footer-links">
+              <li class="footer-link"><a href="/features">Features</a></li>
+              <li class="footer-link"><a href="/pricing">Pricing</a></li>
+              <li class="footer-link">
+                <a href="/case-studies">Case Studies</a>
+              </li>
+              <li class="footer-link"><a href="/blog">Blog</a></li>
+              <li class="footer-link"><a href="/contact">Contact Us</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div>
+            <h3 class="footer-heading">Resources</h3>
+            <ul class="footer-links">
+              <li class="footer-link">
+                <a href="/documentation">Documentation</a>
+              </li>
+              <li class="footer-link"><a href="/api">API Reference</a></li>
+              <li class="footer-link">
+                <a href="/help-center">Help Center</a>
+              </li>
+              <li class="footer-link"><a href="/webinars">Webinars</a></li>
+              <li class="footer-link">
+                <a href="/community">Community Forum</a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Newsletter -->
+          <div class="footer-newsletter">
+            <h3 class="footer-heading">Stay Updated</h3>
+            <p>
+              Subscribe to our newsletter for the latest updates and insights.
+            </p>
+            <form class="footer-form">
+              <input
+                type="email"
+                placeholder="Your email address"
+                class="footer-input"
+                required
+              />
+              <button type="submit" class="footer-button">Subscribe</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-copyright">
+            © 2023 WeedWise Analytics. All rights reserved.
+          </div>
+          <div class="footer-legal">
+            <a href="/privacy" class="footer-legal-link">Privacy Policy</a>
+            <a href="/terms" class="footer-legal-link">Terms of Service</a>
+            <a href="/cookies" class="footer-legal-link">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // FAQ Data
+      const faqs = [
+        {
+          id: 1,
+          question: "How do I use the weed detection camera?",
+          answer:
+            "Simply point your device camera at the crop area and tap the 'Scan' button. Our AI will automatically identify weeds and highlight them in real-time. Make sure you have good lighting and hold the camera steady for best results.",
+          category: "Detection",
+        },
+        {
+          id: 2,
+          question: "What should I do if the model misclassifies a plant?",
+          answer:
+            "You can report misclassifications by tapping the 'Report Issue' button after a scan. This helps improve our AI accuracy. You can also manually correct the classification and our system will learn from your feedback.",
+          category: "Accuracy",
+        },
+        {
+          id: 3,
+          question: "Can I upload a custom dataset?",
+          answer:
+            "Yes! Premium users can upload custom plant datasets through the 'Data Management' section in your dashboard. Supported formats include JPEG, PNG, and CSV annotation files. Maximum file size is 50MB per upload.",
+          category: "Data",
+        },
+        {
+          id: 4,
+          question: "How accurate is the weed detection system?",
+          answer:
+            "Our AI model achieves 94% accuracy on common weeds and crops. Accuracy may vary based on lighting conditions, plant growth stage, and image quality. We continuously update our models with new data.",
+          category: "Accuracy",
+        },
+        {
+          id: 5,
+          question: "What crops are currently supported?",
+          answer:
+            "WeedWise currently supports corn, wheat, soybeans, cotton, tomatoes, and lettuce. We're constantly adding new crop types based on user requests. Contact us if you need support for a specific crop.",
+          category: "Crops",
+        },
+        {
+          id: 6,
+          question: "How do I export detection reports?",
+          answer:
+            "Go to your dashboard, select 'Reports' from the menu, choose your date range, and click 'Export'. Reports can be downloaded as PDF or Excel files containing detection statistics and recommendations.",
+          category: "Reports",
+        },
+        {
+          id: 7,
+          question: "Is my farm data secure?",
+          answer:
+            "Absolutely. All data is encrypted end-to-end and stored on secure servers. We comply with agricultural data privacy standards and never share your farm information with third parties without your explicit consent.",
+          category: "Security",
+        },
+        {
+          id: 8,
+          question: "How do I calibrate the system for my specific farm?",
+          answer:
+            "Use the 'Farm Setup' wizard in your dashboard. Input your crop types, planting patterns, and take 10-15 sample photos of your field. Our system will automatically calibrate for optimal detection in your specific environment.",
+          category: "Setup",
+        },
+      ];
+
+      // DOM Elements
+      const themeToggle = document.getElementById("themeToggle");
+      const searchInput = document.getElementById("searchInput");
+      const faqList = document.getElementById("faqList");
+      const noResults = document.getElementById("noResults");
+      const searchTerm = document.getElementById("searchTerm");
+      const contactForm = document.getElementById("contactForm");
+      const submitButton = document.getElementById("submitButton");
+      const successMessage = document.getElementById("successMessage");
+      const errorMessage = document.getElementById("errorMessage");
+      const openChat = document.getElementById("openChat");
+      const closeChat = document.getElementById("closeChat");
+      const chatWindow = document.getElementById("chatWindow");
+
+      // Theme Toggle
+      themeToggle.addEventListener("click", () => {
+        if (document.body.classList.contains("light-mode")) {
+          document.body.classList.remove("light-mode");
+          document.body.classList.add("dark-mode");
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+          document.body.classList.remove("dark-mode");
+          document.body.classList.add("light-mode");
+          themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+      });
+
+      // Render FAQs
+      function renderFAQs(faqsToRender) {
+        faqList.innerHTML = "";
+
+        if (faqsToRender.length === 0) {
+          noResults.classList.remove("hidden");
+          return;
+        }
+
+        noResults.classList.add("hidden");
+
+        faqsToRender.forEach((faq) => {
+          const faqItem = document.createElement("div");
+          faqItem.className = "faq-item";
+          faqItem.innerHTML = `
+            <button class="faq-question">
+                <div class="faq-content">
+                    <span class="faq-category">${faq.category}</span>
+                    <span class="faq-text">${faq.question}</span>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="faq-answer hidden">
+                <p>${faq.answer}</p>
+                <div class="faq-feedback">
+                    <span class="faq-feedback-text">Was this helpful?</span>
+                    <div class="star-rating">
+                        <button class="star-button"><i class="far fa-star"></i></button>
+                        <button class="star-button"><i class="far fa-star"></i></button>
+                        <button class="star-button"><i class="far fa-star"></i></button>
+                        <button class="star-button"><i class="far fa-star"></i></button>
+                        <button class="star-button"><i class="far fa-star"></i></button>
+                    </div>
+                </div>
+            </div>
+        `;
+          faqList.appendChild(faqItem);
+
+          // Add click event to toggle answer
+          const questionBtn = faqItem.querySelector(".faq-question");
+          const answer = faqItem.querySelector(".faq-answer");
+          const icon = faqItem.querySelector(".fa-chevron-down");
+
+          questionBtn.addEventListener("click", () => {
+            answer.classList.toggle("hidden");
+            icon.classList.toggle("fa-chevron-down");
+            icon.classList.toggle("fa-chevron-up");
+          });
+
+          // Add feedback functionality
+          const starButtons = faqItem.querySelectorAll(".star-button");
+          starButtons.forEach((button, index) => {
+            button.addEventListener("click", () => {
+              // Reset all stars
+              starButtons.forEach((star) => {
+                star.innerHTML = '<i class="far fa-star"></i>';
+              });
+
+              // Fill stars up to the clicked one
+              for (let i = 0; i <= index; i++) {
+                starButtons[i].innerHTML = '<i class="fas fa-star"></i>';
+              }
+
+              // Send feedback (in a real app, this would be an API call)
+              console.log(`Feedback for FAQ ${faq.id}: ${index + 1} stars`);
+
+              // Show thank you message
+              const feedbackText = faqItem.querySelector(".faq-feedback-text");
+              feedbackText.textContent = "Thanks for your feedback!";
+            });
+          });
+        });
+      }
+
+      // Initial FAQ render
+      renderFAQs(faqs);
+
+      // Search functionality
+      searchInput.addEventListener("input", () => {
+        const searchValue = searchInput.value.toLowerCase().trim();
+
+        if (searchValue === "") {
+          renderFAQs(faqs);
+          return;
+        }
+
+        const filteredFAQs = faqs.filter(
+          (faq) =>
+            faq.question.toLowerCase().includes(searchValue) ||
+            faq.answer.toLowerCase().includes(searchValue) ||
+            faq.category.toLowerCase().includes(searchValue)
+        );
+
+        searchTerm.textContent = searchValue;
+        renderFAQs(filteredFAQs);
+      });
+
+      // Contact form submission
+      contactForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(contactForm);
+        const data = {
+          name: formData.get("name"),
+          email: formData.get("email"),
+          message: formData.get("message"),
+        };
+
+        // Show loading state
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<div class="spinner"></div> Sending...';
+
+        // Hide any previous messages
+        successMessage.classList.add("hidden");
+        errorMessage.classList.add("hidden");
+
+        try {
+          // In a real application, this would be an API call
+          // Simulate API call with timeout
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+
+          // Simulate success
+          console.log("Form submitted:", data);
+
+          // Show success message
+          successMessage.classList.remove("hidden");
+
+          // Reset form
+          contactForm.reset();
+        } catch (error) {
+          console.error("Error submitting form:", error);
+          errorMessage.classList.remove("hidden");
+        } finally {
+          // Reset button state
+          submitButton.disabled = false;
+          submitButton.innerHTML =
+            '<i class="fas fa-paper-plane mr-2"></i> Send Message';
+        }
+      });
+
+      // Chat functionality
+      openChat.addEventListener("click", () => {
+        chatWindow.classList.remove("hidden");
+        chatWindow.classList.add("slide-in");
+      });
+
+      closeChat.addEventListener("click", () => {
+        chatWindow.classList.add("hidden");
+      });
+
+      // Close chat when clicking outside
+      document.addEventListener("click", (e) => {
+        if (
+          !chatWindow.classList.contains("hidden") &&
+          !chatWindow.contains(e.target) &&
+          e.target !== openChat
+        ) {
+          chatWindow.classList.add("hidden");
+        }
+      });
+
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", () => {
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          document.body.classList.remove("light-mode");
+          document.body.classList.add("dark-mode");
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+      });
+
+      // Save theme preference
+      themeToggle.addEventListener("click", () => {
+        const isDarkMode = document.body.classList.contains("dark-mode");
+        localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+      });
+    </script>
+  </body>
+</html>

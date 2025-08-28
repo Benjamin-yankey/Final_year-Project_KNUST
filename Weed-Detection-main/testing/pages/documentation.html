@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weed Detection Documentation</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --green-50: #f0fdf4;
+        --green-100: #dcfce7;
+        --green-200: #bbf7d0;
+        --green-300: #86efac;
+        --green-400: #4ade80;
+        --green-500: #22c55e;
+        --green-600: #16a34a;
+        --green-700: #15803d;
+        --green-800: #166534;
+        --green-900: #14532d;
+        --blue-50: #eff6ff;
+        --blue-100: #dbeafe;
+        --blue-200: #bfdbfe;
+        --blue-300: #93c5fd;
+        --blue-400: #60a5fa;
+        --blue-500: #3b82f6;
+        --blue-600: #2563eb;
+        --blue-700: #1d4ed8;
+        --blue-800: #1e40af;
+        --blue-900: #1e3a8a;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: var(--gray-700);
+        background: linear-gradient(
+          135deg,
+          var(--green-50) 0%,
+          var(--blue-50) 100%
+        );
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+
+      /* Header Styles */
+      .header {
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .header-icon {
+        font-size: 2.5rem;
+        color: var(--green-600);
+      }
+
+      .header-title {
+        font-size: 2.25rem;
+        font-weight: bold;
+        color: var(--gray-800);
+      }
+
+      .header-subtitle {
+        color: var(--gray-600);
+        margin-top: 0.5rem;
+      }
+
+      /* Search and Filter */
+      .search-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      @media (min-width: 768px) {
+        .search-filter {
+          flex-direction: row;
+        }
+      }
+
+      .search-container {
+        position: relative;
+        flex: 1;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+      }
+
+      .search-input {
+        width: 100%;
+        padding-left: 2.5rem;
+        padding-right: 1rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        border: 1px solid var(--gray-200);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      .category-select {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--gray-200);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        background-color: white;
+      }
+
+      .category-select:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      /* Main Grid */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 1024px) {
+        .main-grid {
+          grid-template-columns: 2fr 1fr;
+        }
+      }
+
+      /* Documentation Sections */
+      .section {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+      }
+
+      .section-header {
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-header:hover {
+        background-color: var(--gray-50);
+      }
+
+      .section-title-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .section-icon {
+        font-size: 1rem;
+        color: var(--gray-600);
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+
+      .section-chevron {
+        font-size: 1.25rem;
+        color: var(--gray-400);
+      }
+
+      .section-keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+
+      .keyword {
+        padding: 0.25rem 0.5rem;
+        background-color: var(--green-100);
+        color: var(--green-700);
+        border-radius: 9999px;
+        font-size: 0.75rem;
+      }
+
+      .section-content {
+        padding: 0 1.5rem 1.5rem;
+      }
+
+      .section-text {
+        color: var(--gray-700);
+        margin-bottom: 0.75rem;
+      }
+
+      .subsection {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: var(--gray-50);
+        border-radius: 0.5rem;
+      }
+
+      .subsection-title {
+        font-weight: 600;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+      }
+
+      .code-block {
+        background-color: var(--gray-100);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        overflow-x: auto;
+      }
+
+      .code-text {
+        font-family: monospace;
+        font-size: 0.875rem;
+        color: var(--gray-800);
+      }
+
+      /* Sidebar */
+      .sidebar-section {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .sidebar-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-800);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .sidebar-icon {
+        font-size: 1.25rem;
+      }
+
+      .resource-item {
+        border: 1px solid var(--gray-200);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: box-shadow 0.2s;
+      }
+
+      .resource-item:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .resource-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .resource-icon {
+        font-size: 1rem;
+        color: var(--gray-600);
+        margin-top: 0.125rem;
+      }
+
+      .resource-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-800);
+      }
+
+      .resource-description {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        margin-top: 0.25rem;
+      }
+
+      .resource-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--green-600);
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        text-decoration: none;
+      }
+
+      .resource-link:hover {
+        color: var(--green-700);
+      }
+
+      .nav-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: left;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+      }
+
+      .nav-button:hover {
+        background-color: var(--gray-100);
+      }
+
+      /* Footer */
+      .footer {
+        background-color: var(--gray-900);
+        color: var(--gray-200);
+        padding: 3rem 1rem;
+        margin-top: 3rem;
+        border-top: 1px solid var(--gray-700);
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        margin-bottom: 3rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .footer-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .footer-logo-text {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      .footer-description {
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .footer-social {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .social-link {
+        color: var(--gray-400);
+        transition: color 0.2s;
+      }
+
+      .social-link:hover {
+        color: var(--green-400);
+      }
+
+      .footer-heading {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-links a {
+        color: var(--gray-400);
+        text-decoration: none;
+        transition: color 0.2s;
+        font-size: 0.875rem;
+      }
+
+      .footer-links a:hover {
+        color: var(--green-400);
+      }
+
+      .footer-newsletter input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background-color: var(--gray-800);
+        border: 1px solid var(--gray-700);
+        border-radius: 0.375rem;
+        color: white;
+        margin-bottom: 0.75rem;
+      }
+
+      .footer-newsletter input:focus {
+        outline: none;
+        border-color: var(--green-500);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+
+      .footer-newsletter button {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        background-color: var(--green-600);
+        color: white;
+        font-weight: 500;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .footer-newsletter button:hover {
+        background-color: var(--green-700);
+      }
+
+      .footer-bottom {
+        padding-top: 2rem;
+        border-top: 1px solid var(--gray-800);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      @media (min-width: 768px) {
+        .footer-bottom {
+          flex-direction: row;
+        }
+      }
+
+      .footer-copyright {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+      }
+
+      .footer-legal {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .footer-legal a {
+        font-size: 0.875rem;
+        color: var(--gray-400);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .footer-legal a:hover {
+        color: var(--green-400);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-content">
+          <i class="fas fa-camera header-icon"></i>
+          <div>
+            <h1 class="header-title">Weed Detection Documentation</h1>
+            <p class="header-subtitle">
+              Comprehensive guide to computer vision-based weed detection
+              systems
+            </p>
+          </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-filter">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search documentation..."
+            />
+          </div>
+          <select id="category-select" class="category-select">
+            <option value="all">All</option>
+            <option value="overview">Overview</option>
+            <option value="technical">Technical</option>
+            <option value="data">Data</option>
+            <option value="implementation">Implementation</option>
+            <option value="evaluation">Evaluation</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <!-- Main Documentation -->
+        <div class="documentation-content">
+          <!-- Sections will be dynamically inserted here -->
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- External Resources -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">
+              <i class="fas fa-external-link-alt sidebar-icon"></i>
+              External Resources
+            </h3>
+            <div id="resources-container">
+              <!-- Resources will be dynamically inserted here -->
+            </div>
+          </div>
+
+          <!-- Quick Navigation -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Quick Navigation</h3>
+            <nav id="navigation-container">
+              <!-- Navigation will be dynamically inserted here -->
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-grid">
+          <!-- Company Info -->
+          <div>
+            <div class="footer-logo">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="text-green-400"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              <span class="footer-logo-text">WeedWise</span>
+            </div>
+            <p class="footer-description">
+              Advanced weed detection and agricultural analytics platform
+              helping farmers optimize crop yields through AI-powered solutions.
+            </p>
+            <div class="footer-social">
+              <a href="#" class="social-link">
+                <i class="fab fa-twitter fa-lg"></i>
+              </a>
+              <a href="#" class="social-link">
+                <i class="fab fa-facebook fa-lg"></i>
+              </a>
+              <a href="#" class="social-link">
+                <i class="fab fa-linkedin fa-lg"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div>
+            <h4 class="footer-heading">Quick Links</h4>
+            <ul class="footer-links">
+              <li><a href="/features">Features</a></li>
+              <li><a href="/pricing">Pricing</a></li>
+              <li><a href="/case-studies">Case Studies</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/contact">Contact Us</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div>
+            <h4 class="footer-heading">Resources</h4>
+            <ul class="footer-links">
+              <li><a href="/documentation">Documentation</a></li>
+              <li><a href="/api">API Reference</a></li>
+              <li><a href="/help-center">Help Center</a></li>
+              <li><a href="/webinars">Webinars</a></li>
+              <li><a href="/community">Community Forum</a></li>
+            </ul>
+          </div>
+
+          <!-- Newsletter -->
+          <div>
+            <h4 class="footer-heading">Stay Updated</h4>
+            <p class="footer-description">
+              Subscribe to our newsletter for the latest updates and insights.
+            </p>
+            <form class="footer-newsletter">
+              <input type="email" placeholder="Your email address" required />
+              <button type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="footer-copyright">
+            © 2023 WeedWise Analytics. All rights reserved.
+          </div>
+          <div class="footer-legal">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="/cookies">Cookie Policy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Data
+      const docSections = [
+        {
+          id: "introduction",
+          title: "Introduction to Weed Detection",
+          category: "overview",
+          keywords: [
+            "introduction",
+            "overview",
+            "basics",
+            "agriculture",
+            "computer vision",
+          ],
+          content: `Weed detection is a critical application of computer vision in precision agriculture. This technology enables automated identification and classification of weeds in crop fields, helping farmers make informed decisions about herbicide application, mechanical weeding, and crop management.
+
+Key benefits include:
+- Reduced herbicide usage through targeted application
+- Improved crop yield by minimizing weed competition
+- Cost reduction in labor and chemical inputs
+- Environmental protection through precision spraying
+- Real-time field monitoring capabilities`,
+          subsections: [
+            {
+              id: "challenges",
+              title: "Common Challenges",
+              category: "overview",
+              keywords: ["challenges", "problems", "difficulties"],
+              content: `- Variability in weed species and growth stages
+- Environmental conditions (lighting, weather)
+- Crop-weed similarity in early growth stages
+- Real-time processing requirements
+- Dataset quality and annotation accuracy`,
+            },
+          ],
+        },
+        {
+          id: "technical-approach",
+          title: "Technical Approaches",
+          category: "technical",
+          keywords: [
+            "machine learning",
+            "deep learning",
+            "cnn",
+            "yolo",
+            "segmentation",
+          ],
+          content: `Modern weed detection systems employ various machine learning and computer vision techniques:
+
+**Deep Learning Models:**
+- Convolutional Neural Networks (CNNs) for image classification
+- YOLO (You Only Look Once) for real-time object detection
+- U-Net and Mask R-CNN for semantic segmentation
+- Vision Transformers (ViTs) for improved accuracy
+
+**Traditional Computer Vision:**
+- Color-based segmentation using HSV color spaces
+- Texture analysis with GLCM features
+- Shape analysis using morphological operations
+- Edge detection and contour analysis`,
+          subsections: [
+            {
+              id: "preprocessing",
+              title: "Image Preprocessing",
+              category: "technical",
+              keywords: ["preprocessing", "augmentation", "normalization"],
+              content: `Essential preprocessing steps:
+- Image resizing and normalization
+- Color space conversion (RGB to HSV/LAB)
+- Noise reduction and filtering
+- Data augmentation techniques
+- Illumination correction`,
+            },
+          ],
+        },
+        {
+          id: "datasets",
+          title: "Datasets and Training Data",
+          category: "data",
+          keywords: ["datasets", "training", "annotation", "labeling"],
+          content: `Quality datasets are crucial for training effective weed detection models:
+
+**Popular Public Datasets:**
+- DeepWeeds: 17,509 images across 9 weed species
+- PlantVillage: Comprehensive plant disease and weed dataset
+- Crop/Weed Field Image Dataset (CWFID)
+- WeedNet: Large-scale weed identification dataset
+- Agricultural Weed Dataset (AWD)
+
+**Data Collection Best Practices:**
+- Capture images at different growth stages
+- Include various lighting conditions
+- Represent different soil types and backgrounds
+- Maintain consistent camera angles and distances
+- Ensure proper class balance`,
+          subsections: [
+            {
+              id: "annotation",
+              title: "Data Annotation",
+              category: "data",
+              keywords: ["annotation", "labeling", "ground truth"],
+              content: `Annotation strategies:
+- Bounding box annotation for detection tasks
+- Pixel-wise segmentation for precise localization
+- Multi-class labeling for species identification
+- Quality control and validation processes`,
+            },
+          ],
+        },
+        {
+          id: "implementation",
+          title: "Implementation Guide",
+          category: "implementation",
+          keywords: ["code", "python", "tensorflow", "pytorch", "opencv"],
+          content: `**Framework Selection:**
+- TensorFlow/Keras for beginners
+- PyTorch for research and flexibility
+- OpenCV for traditional computer vision
+- ONNX for model deployment across platforms
+
+**Basic Implementation Structure:
+\`\`\`python
+import cv2
+import numpy as np
+from tensorflow import keras
+
+class WeedDetector:
+    def __init__(self, model_path):
+        self.model = keras.models.load_model(model_path)
+        
+    def preprocess_image(self, image):
+        # Resize and normalize
+        resized = cv2.resize(image, (224, 224))
+        normalized = resized / 255.0
+        return np.expand_dims(normalized, axis=0)
+        
+    def detect_weeds(self, image):
+        processed = self.preprocess_image(image)
+        predictions = self.model.predict(processed)
+        return predictions
+\`\`\``,
+          subsections: [
+            {
+              id: "deployment",
+              title: "Model Deployment",
+              category: "implementation",
+              keywords: ["deployment", "edge", "mobile", "raspberry pi"],
+              content: `Deployment options:
+- Edge devices (Raspberry Pi, NVIDIA Jetson)
+- Mobile applications with TensorFlow Lite
+- Cloud-based API services
+- Embedded systems for agricultural machinery`,
+            },
+          ],
+        },
+        {
+          id: "evaluation",
+          title: "Model Evaluation and Metrics",
+          category: "evaluation",
+          keywords: ["metrics", "accuracy", "precision", "recall", "iou"],
+          content: `**Key Performance Metrics:**
+- Accuracy: Overall correctness of predictions
+- Precision: True positives / (True positives + False positives)
+- Recall: True positives / (True positives + False negatives)
+- F1-Score: Harmonic mean of precision and recall
+- IoU (Intersection over Union): For segmentation tasks
+- mAP (mean Average Precision): For detection tasks
+
+**Evaluation Considerations:**
+- Cross-validation for robust assessment
+- Test on diverse environmental conditions
+- Consider computational efficiency metrics
+- Real-world field testing validation`,
+          subsections: [
+            {
+              id: "benchmarking",
+              title: "Benchmarking Standards",
+              category: "evaluation",
+              keywords: ["benchmark", "standards", "comparison"],
+              content: `Standard evaluation protocols:
+- Use of standardized test datasets
+- Consistent evaluation metrics
+- Statistical significance testing
+- Comparison with state-of-the-art methods`,
+            },
+          ],
+        },
+      ];
+
+      const externalResources = [
+        {
+          title: "PlantNet API",
+          url: "https://my.plantnet.org/api",
+          description: "Plant identification API with extensive database",
+          type: "api",
+        },
+        {
+          title: "DeepWeeds Dataset",
+          url: "https://github.com/AlexOlsen/DeepWeeds",
+          description: "Comprehensive weed species dataset with 17,509 images",
+          type: "dataset",
+        },
+        {
+          title: "YOLOv5 for Agriculture",
+          url: "https://github.com/ultralytics/yolov5",
+          description:
+            "Real-time object detection optimized for agricultural applications",
+          type: "tool",
+        },
+        {
+          title: "OpenCV Computer Vision Library",
+          url: "https://opencv.org/",
+          description: "Essential computer vision library for image processing",
+          type: "library",
+        },
+        {
+          title: "Agricultural Computer Vision Papers",
+          url: "https://paperswithcode.com/task/weed-detection",
+          description: "Latest research papers on weed detection with code",
+          type: "paper",
+        },
+        {
+          title: "TensorFlow Lite for Mobile",
+          url: "https://www.tensorflow.org/lite",
+          description: "Deploy ML models on mobile and edge devices",
+          type: "tool",
+        },
+      ];
+
+      // State
+      let searchQuery = "";
+      let selectedCategory = "all";
+      let expandedSections = new Set();
+
+      // DOM Elements
+      const searchInput = document.getElementById("search-input");
+      const categorySelect = document.getElementById("category-select");
+      const documentationContent = document.querySelector(
+        ".documentation-content"
+      );
+      const resourcesContainer = document.getElementById("resources-container");
+      const navigationContainer = document.getElementById(
+        "navigation-container"
+      );
+
+      // Initialize
+      function init() {
+        renderDocumentation();
+        renderResources();
+        renderNavigation();
+
+        // Event listeners
+        searchInput.addEventListener("input", (e) => {
+          searchQuery = e.target.value.toLowerCase();
+          renderDocumentation();
+        });
+
+        categorySelect.addEventListener("change", (e) => {
+          selectedCategory = e.target.value;
+          renderDocumentation();
+        });
+      }
+
+      // Get icon based on category
+      function getIcon(category) {
+        switch (category) {
+          case "overview":
+            return '<i class="fas fa-book"></i>';
+          case "technical":
+            return '<i class="fas fa-microchip"></i>';
+          case "data":
+            return '<i class="fas fa-database"></i>';
+          case "implementation":
+            return '<i class="fas fa-code"></i>';
+          case "evaluation":
+            return '<i class="fas fa-cog"></i>';
+          default:
+            return '<i class="fas fa-file-alt"></i>';
+        }
+      }
+
+      // Get resource icon based on type
+      function getResourceIcon(type) {
+        switch (type) {
+          case "api":
+            return '<i class="fas fa-globe"></i>';
+          case "dataset":
+            return '<i class="fas fa-database"></i>';
+          case "paper":
+            return '<i class="fas fa-file-alt"></i>';
+          case "tool":
+            return '<i class="fas fa-cog"></i>';
+          case "library":
+            return '<i class="fab fa-github"></i>';
+          default:
+            return '<i class="fas fa-external-link-alt"></i>';
+        }
+      }
+
+      // Toggle section expansion
+      function toggleSection(sectionId) {
+        if (expandedSections.has(sectionId)) {
+          expandedSections.delete(sectionId);
+        } else {
+          expandedSections.add(sectionId);
+        }
+        renderDocumentation();
+      }
+
+      // Filter sections based on search and category
+      function filterSections() {
+        return docSections.filter((section) => {
+          const matchesCategory =
+            selectedCategory === "all" || section.category === selectedCategory;
+          const matchesSearch =
+            searchQuery === "" ||
+            section.title.toLowerCase().includes(searchQuery) ||
+            section.content.toLowerCase().includes(searchQuery) ||
+            section.keywords.some((keyword) =>
+              keyword.toLowerCase().includes(searchQuery)
+            );
+
+          return matchesCategory && matchesSearch;
+        });
+      }
+
+      // Render documentation sections
+      function renderDocumentation() {
+        const filteredSections = filterSections();
+
+        documentationContent.innerHTML = filteredSections
+          .map((section) => {
+            const isExpanded = expandedSections.has(section.id);
+
+            return `
+                    <div class="section">
+                        <div class="section-header" onclick="toggleSection('${
+                          section.id
+                        }')">
+                            <div>
+                                <div class="section-title-container">
+                                    ${getIcon(section.category)}
+                                    <h2 class="section-title">${
+                                      section.title
+                                    }</h2>
+                                </div>
+                                <div class="section-keywords">
+                                    ${section.keywords
+                                      .slice(0, 3)
+                                      .map(
+                                        (keyword) =>
+                                          `<span class="keyword">${keyword}</span>`
+                                      )
+                                      .join("")}
+                                </div>
+                            </div>
+                            <i class="fas ${
+                              isExpanded
+                                ? "fa-chevron-down"
+                                : "fa-chevron-right"
+                            } section-chevron"></i>
+                        </div>
+                        
+                        ${
+                          isExpanded
+                            ? `
+                            <div class="section-content">
+                                ${renderContent(section.content)}
+                                
+                                ${
+                                  section.subsections
+                                    ? section.subsections
+                                        .map(
+                                          (subsection) => `
+                                    <div class="subsection">
+                                        <h4 class="subsection-title">${
+                                          subsection.title
+                                        }</h4>
+                                        ${renderContent(subsection.content)}
+                                    </div>
+                                `
+                                        )
+                                        .join("")
+                                    : ""
+                                }
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      // Render content with formatting
+      function renderContent(content) {
+        // Split by lines and process each line
+        const lines = content.split("\n");
+        let inCodeBlock = false;
+        let codeContent = "";
+
+        const processedLines = lines.map((line) => {
+          // Handle code blocks
+          if (line.includes("```python")) {
+            inCodeBlock = true;
+            return "";
+          }
+
+          if (inCodeBlock && line.includes("```")) {
+            inCodeBlock = false;
+            const codeBlock = `<div class="code-block"><pre class="code-text">${codeContent}</pre></div>`;
+            codeContent = "";
+            return codeBlock;
+          }
+
+          if (inCodeBlock) {
+            codeContent += line + "\n";
+            return "";
+          }
+
+          // Handle bold headings
+          if (line.startsWith("**") && line.endsWith(":**")) {
+            return `<h4 class="subsection-title">${line.replace(
+              /\*\*/g,
+              ""
+            )}</h4>`;
+          }
+
+          // Handle list items
+          if (line.startsWith("- ")) {
+            return `<p class="section-text">${line}</p>`;
+          }
+
+          // Handle regular paragraphs
+          if (line.trim()) {
+            return `<p class="section-text">${line}</p>`;
+          }
+
+          return "";
+        });
+
+        return processedLines.join("");
+      }
+
+      // Render external resources
+      function renderResources() {
+        resourcesContainer.innerHTML = externalResources
+          .map(
+            (resource) => `
+                <div class="resource-item">
+                    <div class="resource-header">
+                        ${getResourceIcon(resource.type)}
+                        <div>
+                            <h4 class="resource-title">${resource.title}</h4>
+                            <p class="resource-description">${
+                              resource.description
+                            }</p>
+                            <a href="${
+                              resource.url
+                            }" target="_blank" class="resource-link">
+                                Visit Resource
+                                <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Render navigation
+      function renderNavigation() {
+        navigationContainer.innerHTML = docSections
+          .map(
+            (section) => `
+                <button class="nav-button" onclick="toggleSection('${
+                  section.id
+                }')">
+                    ${getIcon(section.category)}
+                    <span>${section.title}</span>
+                </button>
+            `
+          )
+          .join("");
+      }
+
+      // Initialize the application
+      init();
+
+      // Make functions available globally for onclick handlers
+      window.toggleSection = toggleSection;
+    </script>
+  </body>
+</html>

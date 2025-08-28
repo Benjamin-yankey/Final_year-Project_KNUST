@@ -47,7 +47,7 @@ const App = () => (
         <Route path="/RecentScans" element={<RecentScans />} />
         <Route path="/UploadImagery" element={<UploadImagery />} />
         <Route path="/ExportMap" element={<ExportMap />} />
-        <Route path="/system-status" element={<SystemStatus />} />
+        <Route path="/SystemStatus" element={<SystemStatus />} />
         <Route path="/AccuracyPage" element={<AccuracyPage />} />
         <Route
           path="/FalsePositiveRatePage"
