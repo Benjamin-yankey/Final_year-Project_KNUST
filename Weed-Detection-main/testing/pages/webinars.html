@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeedWise - Agricultural Weed Education & Webinars</title>
+
+    <!-- Enhanced Favicon - WeedWise Logo -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMkU4QjU3O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzQ0IzNzE7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9InVybCgjYmcpIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+MvzwvdGV4dD4KPC9zdmc+"
+    />
+
+    <!-- Fallback favicon for older browsers -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAwMDAAMDcwADA3MAAwNzAAICAgAAAAP8AAP8AAAD//wD/AAAA/wD/AP//AAD///8A"
+    />
+    <meta
+      name="keywords"
+      content="weed education, agricultural webinars, farm training, weed management, crop protection"
+    />
+    <meta name="author" content="WeedWise Agricultural Education" />
+
+    <style>
+      :root {
+        --primary-green: #228b22;
+        --secondary-green: #32cd32;
+        --accent-green: #90ee90;
+        --light-green: #f0fff0;
+        --dark-green: #006400;
+        --brown: #8b4513;
+        --orange: #ff8c00;
+        --blue: #4a90e2;
+        --text-dark: #2f4f2f;
+        --text-light: #666;
+        --background: #fafffe;
+        --white: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.1);
+        --border-radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+          sans-serif;
+        background-color: var(--background);
+        color: var(--text-dark);
+        line-height: 1.7;
+        overflow-x: hidden;
+      }
+
+      .container {
+        width: min(90%, 1200px);
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header & Navigation */
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--secondary-green)
+        );
+        color: var(--white);
+        padding: 1rem 0;
+        box-shadow: 0 4px 20px var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 30px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+        padding: 8px 16px;
+        border-radius: 8px;
+      }
+
+      .nav-links a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .mobile-menu {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--light-green),
+          rgba(255, 255, 255, 0.9)
+        );
+        padding: 60px 0;
+        text-align: center;
+        border-radius: var(--border-radius);
+        margin: 30px 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(34, 139, 34, 0.05) 0%,
+          transparent 50%
+        );
+        animation: float 20s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: rotate(0deg) translate(0, 0);
+        }
+        50% {
+          transform: rotate(180deg) translate(10px, 10px);
+        }
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        margin-bottom: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--secondary-green)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 0 auto 30px;
+      }
+
+      /* Upcoming Webinars Section */
+      .webinars-section {
+        background: var(--white);
+        padding: 40px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 30px var(--shadow);
+        margin: 40px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        color: var(--dark-green);
+        font-weight: 700;
+      }
+
+      .webinar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin: 30px 0;
+      }
+
+      .webinar-card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 8px 30px var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        border-left: 4px solid var(--primary-green);
+      }
+
+      .webinar-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(34, 139, 34, 0.2);
+      }
+
+      .webinar-header {
+        background: linear-gradient(
+          135deg,
+          var(--light-green),
+          rgba(144, 238, 144, 0.3)
+        );
+        padding: 20px;
+        text-align: center;
+      }
+
+      .webinar-date {
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+
+      .webinar-time {
+        color: var(--text-light);
+        font-size: 0.95rem;
+      }
+
+      .webinar-content {
+        padding: 25px;
+      }
+
+      .webinar-title {
+        color: var(--dark-green);
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      .webinar-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .webinar-speaker {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--light-green);
+        border-radius: 8px;
+      }
+
+      .speaker-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      .speaker-info h4 {
+        color: var(--dark-green);
+        margin-bottom: 5px;
+      }
+
+      .speaker-info p {
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .webinar-status {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+
+      .status-upcoming {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+      .status-live {
+        background: #ffebee;
+        color: #d32f2f;
+        animation: pulse 2s infinite;
+      }
+      .status-recorded {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Education Features */
+      .education-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin: 50px 0;
+      }
+
+      .feature-card {
+        background: var(--white);
+        padding: 30px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 30px var(--shadow);
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--secondary-green)
+        );
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(34, 139, 34, 0.2);
+      }
+
+      .card-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--secondary-green)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .card-title {
+        color: var(--dark-green);
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      .card-description {
+        color: var(--text-light);
+        margin-bottom: 25px;
+        line-height: 1.6;
+      }
+
+      /* Weed Types Section */
+      .weed-types {
+        margin: 60px 0;
+      }
+
+      .weed-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .weed-card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 8px 30px var(--shadow);
+        transition: var(--transition);
+        position: relative;
+      }
+
+      .weed-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(34, 139, 34, 0.2);
+      }
+
+      .weed-image {
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          var(--light-green),
+          rgba(144, 238, 144, 0.3)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--primary-green);
+        position: relative;
+      }
+
+      .weed-content {
+        padding: 25px;
+      }
+
+      .weed-title {
+        color: var(--dark-green);
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      .weed-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+
+      .danger-level {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+
+      .danger-high {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .danger-medium {
+        background: #fff3e0;
+        color: #ef6c00;
+      }
+      .danger-low {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-block;
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--secondary-green)
+        );
+        color: var(--white);
+        padding: 14px 28px;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: var(--transition);
+        box-shadow: 0 4px 15px rgba(34, 139, 34, 0.3);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(34, 139, 34, 0.4);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+        box-shadow: none;
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-green);
+        color: var(--white);
+      }
+
+      .btn-live {
+        background: linear-gradient(135deg, #d32f2f, #f44336);
+        animation: pulse 2s infinite;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--dark-green);
+        color: var(--white);
+        padding: 50px 0 30px;
+        margin-top: 60px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 40px;
+        margin-bottom: 30px;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 20px;
+        color: var(--white);
+        font-size: 1.3rem;
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-section ul li a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .footer-section ul li a:hover {
+        color: var(--white);
+        text-decoration: underline;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: var(--primary-green);
+          flex-direction: column;
+          padding: 20px;
+          box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .nav-links.active {
+          display: flex;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .hero {
+          padding: 40px 0;
+        }
+
+        .education-features {
+          grid-template-columns: 1fr;
+        }
+
+        .webinar-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Notification */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--white);
+        color: var(--text-dark);
+        padding: 15px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 30px var(--shadow);
+        border-left: 4px solid var(--primary-green);
+        z-index: 1001;
+        transform: translateX(400px);
+        transition: var(--transition);
+      }
+
+      .notification.show {
+        transform: translateX(0);
+      }
+
+      .notification.success {
+        border-left-color: #4caf50;
+      }
+
+      .notification.error {
+        border-left-color: #f44336;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1002;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--white);
+        padding: 40px;
+        border-radius: var(--border-radius);
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+      }
+
+      .modal-title {
+        color: var(--dark-green);
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="container">
+        <div class="logo">
+          <span>🎓</span>
+          WeedWise
+        </div>
+        <ul class="nav-links">
+          <li><a href="#webinars">Webinars</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#weed-types">Weed Guide</a></li>
+        </ul>
+        <button class="mobile-menu" onclick="toggleMobileMenu()">
+          <span class="sr-only">Toggle navigation menu</span>
+          ☰
+        </button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Agricultural Weed Education Center</h1>
+          <p>
+            Join expert-led webinars and training programs to master effective
+            weed management strategies. Learn from agricultural professionals
+            and improve your farming practices.
+          </p>
+          <div style="margin-top: 30px">
+            <a href="#webinars" class="btn">Join Next Webinar</a>
+            <a href="#education" class="btn btn-secondary">Browse Courses</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="webinars-section" id="webinars">
+        <h2 class="section-title">Upcoming Webinars</h2>
+
+        <div class="webinar-grid">
+          <div class="webinar-card">
+            <div class="webinar-header">
+              <div class="webinar-date">March 15, 2025</div>
+              <div class="webinar-time">2:00 PM EST</div>
+            </div>
+            <div class="webinar-content">
+              <span class="webinar-status status-upcoming">Upcoming</span>
+              <h3 class="webinar-title">
+                Precision Weed Management in Corn Fields
+              </h3>
+              <p class="webinar-description">
+                Learn advanced techniques for identifying and controlling weeds
+                in corn production systems using precision agriculture
+                technology.
+              </p>
+
+              <div class="webinar-speaker">
+                <div class="speaker-avatar">DR</div>
+                <div class="speaker-info">
+                  <h4>Dr. Sarah Rodriguez</h4>
+                  <p>Agricultural Extension Specialist</p>
+                </div>
+              </div>
+
+              <button class="btn" onclick="registerWebinar('corn-management')">
+                Register Free
+              </button>
+            </div>
+          </div>
+
+          <div class="webinar-card">
+            <div class="webinar-header">
+              <div class="webinar-date">March 12, 2025</div>
+              <div class="webinar-time">1:00 PM EST</div>
+            </div>
+            <div class="webinar-content">
+              <span class="webinar-status status-live">Live Now</span>
+              <h3 class="webinar-title">
+                Herbicide Resistance Management Strategies
+              </h3>
+              <p class="webinar-description">
+                Current session on managing herbicide-resistant weeds and
+                developing sustainable control programs for long-term success.
+              </p>
+
+              <div class="webinar-speaker">
+                <div class="speaker-avatar">DM</div>
+                <div class="speaker-info">
+                  <h4>Dr. Michael Chen</h4>
+                  <p>Weed Science Professor</p>
+                </div>
+              </div>
+
+              <button
+                class="btn btn-live"
+                onclick="joinLiveWebinar('resistance-management')"
+              >
+                Join Live Session
+              </button>
+            </div>
+          </div>
+
+          <div class="webinar-card">
+            <div class="webinar-header">
+              <div class="webinar-date">March 20, 2025</div>
+              <div class="webinar-time">3:00 PM EST</div>
+            </div>
+            <div class="webinar-content">
+              <span class="webinar-status status-upcoming">Upcoming</span>
+              <h3 class="webinar-title">Organic Weed Control Methods</h3>
+              <p class="webinar-description">
+                Explore sustainable, non-chemical approaches to weed management
+                including cover crops, cultivation, and biological controls.
+              </p>
+
+              <div class="webinar-speaker">
+                <div class="speaker-avatar">JW</div>
+                <div class="speaker-info">
+                  <h4>Dr. Jennifer Walsh</h4>
+                  <p>Organic Farming Specialist</p>
+                </div>
+              </div>
+
+              <button class="btn" onclick="registerWebinar('organic-control')">
+                Register Free
+              </button>
+            </div>
+          </div>
+
+          <div class="webinar-card">
+            <div class="webinar-header">
+              <div class="webinar-date">March 8, 2025</div>
+              <div class="webinar-time">Recorded</div>
+            </div>
+            <div class="webinar-content">
+              <span class="webinar-status status-recorded"
+                >Watch Recording</span
+              >
+              <h3 class="webinar-title">Early Season Weed Identification</h3>
+              <p class="webinar-description">
+                Master the art of identifying common agricultural weeds in their
+                early growth stages for more effective management.
+              </p>
+
+              <div class="webinar-speaker">
+                <div class="speaker-avatar">TR</div>
+                <div class="speaker-info">
+                  <h4>Dr. Thomas Reed</h4>
+                  <p>Plant Pathologist</p>
+                </div>
+              </div>
+
+              <button
+                class="btn btn-secondary"
+                onclick="watchRecording('early-identification')"
+              >
+                Watch Recording
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="education-features" id="education">
+        <div class="feature-card">
+          <div class="card-icon">🎥</div>
+          <h3 class="card-title">Live Expert Sessions</h3>
+          <p class="card-description">
+            Interactive webinars with Q&A sessions led by agricultural extension
+            specialists and weed science experts
+          </p>
+          <button class="btn" onclick="showFeatureInfo('live-sessions')">
+            View Schedule
+          </button>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">📚</div>
+          <h3 class="card-title">Educational Resources</h3>
+          <p class="card-description">
+            Comprehensive library of weed identification guides, management
+            strategies, and research publications
+          </p>
+          <button class="btn" onclick="showFeatureInfo('resources')">
+            Browse Library
+          </button>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🏆</div>
+          <h3 class="card-title">Certification Programs</h3>
+          <p class="card-description">
+            Earn professional certifications in weed management and precision
+            agriculture practices
+          </p>
+          <button class="btn" onclick="showFeatureInfo('certification')">
+            Learn More
+          </button>
+        </div>
+
+        <div class="feature-card">
+          <div class="card-icon">🤝</div>
+          <h3 class="card-title">Community Support</h3>
+          <p class="card-description">
+            Connect with other farmers and agricultural professionals to share
+            experiences and best practices
+          </p>
+          <button class="btn" onclick="showFeatureInfo('community')">
+            Join Community
+          </button>
+        </div>
+      </section>
+
+      <section class="weed-types" id="weed-types">
+        <h2 class="section-title">Featured Weed Species</h2>
+        <div class="weed-grid">
+          <div class="weed-card">
+            <div class="weed-image">🌿</div>
+            <div class="weed-content">
+              <span class="danger-level danger-high">High Threat</span>
+              <h3 class="weed-title">Palmer Amaranth</h3>
+              <p class="weed-description">
+                Aggressive broadleaf weed that competes heavily with crops for
+                nutrients and water. Resistant to multiple herbicides.
+              </p>
+              <button class="btn" onclick="learnMore('palmer-amaranth')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+
+          <div class="weed-card">
+            <div class="weed-image">🌱</div>
+            <div class="weed-content">
+              <span class="danger-level danger-high">High Threat</span>
+              <h3 class="weed-title">Giant Ragweed</h3>
+              <p class="weed-description">
+                Large broadleaf weed that can grow over 15 feet tall,
+                significantly reducing crop yields through competition.
+              </p>
+              <button class="btn" onclick="learnMore('giant-ragweed')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+
+          <div class="weed-card">
+            <div class="weed-image">🌾</div>
+            <div class="weed-content">
+              <span class="danger-level danger-medium">Medium Threat</span>
+              <h3 class="weed-title">Johnson Grass</h3>
+              <p class="weed-description">
+                Perennial grass weed with extensive rhizome system. Difficult to
+                control once established.
+              </p>
+              <button class="btn" onclick="learnMore('johnson-grass')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+
+          <div class="weed-card">
+            <div class="weed-image">🍀</div>
+            <div class="weed-content">
+              <span class="danger-level danger-medium">Medium Threat</span>
+              <h3 class="weed-title">Wild Clover</h3>
+              <p class="weed-description">
+                Nitrogen-fixing legume that can compete with crops but also
+                provides some soil benefits.
+              </p>
+              <button class="btn" onclick="learnMore('wild-clover')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+
+          <div class="weed-card">
+            <div class="weed-image">🌻</div>
+            <div class="weed-content">
+              <span class="danger-level danger-low">Low Threat</span>
+              <h3 class="weed-title">Common Dandelion</h3>
+              <p class="weed-description">
+                Perennial broadleaf weed with deep taproot. Generally manageable
+                with proper timing.
+              </p>
+              <button class="btn" onclick="learnMore('dandelion')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+
+          <div class="weed-card">
+            <div class="weed-image">🌿</div>
+            <div class="weed-content">
+              <span class="danger-level danger-low">Low Threat</span>
+              <h3 class="weed-title">Chickweed</h3>
+              <p class="weed-description">
+                Small annual broadleaf weed that thrives in cool, moist
+                conditions. Easy to control.
+              </p>
+              <button class="btn" onclick="learnMore('chickweed')">
+                Learn Management
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Registration Modal -->
+    <div class="modal" id="registrationModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('registrationModal')">
+          &times;
+        </button>
+        <h3 class="modal-title">Register for Webinar</h3>
+        <div
+          style="
+            background: var(--light-green);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+          "
+        >
+          <h4 id="selectedWebinarTitle">Webinar Title</h4>
+          <p id="selectedWebinarInfo">Date and time information</p>
+        </div>
+        <form id="registrationForm">
+          <div style="margin: 20px 0">
+            <input
+              type="text"
+              placeholder="Full Name"
+              required
+              style="
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-bottom: 15px;
+              "
+            />
+            <input
+              type="email"
+              placeholder="Email Address"
+              required
+              style="
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-bottom: 15px;
+              "
+            />
+            <input
+              type="text"
+              placeholder="Farm/Organization"
+              style="
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-bottom: 15px;
+              "
+            />
+            <select
+              style="
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-bottom: 15px;
+              "
+            >
+              <option>Select Your Role</option>
+              <option>Crop Farmer</option>
+              <option>Agricultural Consultant</option>
+              <option>Extension Agent</option>
+              <option>Student</option>
+              <option>Researcher</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <button type="submit" class="btn" style="width: 100%">
+            Complete Registration
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Weed Detail Modal -->
+    <div class="modal" id="weedDetailModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('weedDetailModal')">
+          &times;
+        </button>
+        <h3 class="modal-title" id="weedDetailTitle">Weed Management Guide</h3>
+        <div id="weedDetailContent">
+          <!-- Content will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <div class="footer-bottom">
+          <p>
+            &copy; 2025 WeedWise Agricultural Education. All rights reserved.
+          </p>
+          <p>
+            Professional weed management education for sustainable agriculture.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Webinar data
+      const webinarData = {
+        "corn-management": {
+          title: "Precision Weed Management in Corn Fields",
+          date: "March 15, 2025 at 2:00 PM EST",
+          speaker: "Dr. Sarah Rodriguez",
+          description:
+            "Comprehensive training on advanced weed management techniques specifically for corn production systems.",
+        },
+        "resistance-management": {
+          title: "Herbicide Resistance Management Strategies",
+          date: "Live Session - Join Now!",
+          speaker: "Dr. Michael Chen",
+          description:
+            "Current strategies for managing herbicide-resistant weeds and developing sustainable control programs.",
+        },
+        "organic-control": {
+          title: "Organic Weed Control Methods",
+          date: "March 20, 2025 at 3:00 PM EST",
+          speaker: "Dr. Jennifer Walsh",
+          description:
+            "Sustainable, non-chemical approaches to weed management including cover crops and biological controls.",
+        },
+      };
+
+      // Weed management data
+      const weedManagementData = {
+        "palmer-amaranth": {
+          title: "Palmer Amaranth Management",
+          content: `
+                    <div style="background: #FFEBEE; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #C62828;">
+                        <h4 style="color: #C62828; margin-bottom: 10px;">⚠️ High Priority Weed</h4>
+                        <p>Palmer amaranth is one of the most problematic weeds in agriculture due to its rapid growth and herbicide resistance.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Use pre-emergence herbicides with multiple modes of action</li>
+                        <li>Implement crop rotation to break weed cycles</li>
+                        <li>Scout fields regularly during early growing season</li>
+                        <li>Consider mechanical cultivation for small infestations</li>
+                        <li>Prevent seed production - one plant can produce 1 million seeds</li>
+                    </ul>
+                    <div style="background: var(--light-green); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <strong>Next Webinar:</strong> "Advanced Palmer Amaranth Control" - March 25, 2025
+                    </div>
+                `,
+        },
+        "giant-ragweed": {
+          title: "Giant Ragweed Management",
+          content: `
+                    <div style="background: #FFEBEE; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #C62828;">
+                        <h4 style="color: #C62828; margin-bottom: 10px;">⚠️ High Priority Weed</h4>
+                        <p>Giant ragweed can grow over 15 feet tall and significantly reduce crop yields through competition.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Early season control is critical - treat when plants are small</li>
+                        <li>Use herbicides with residual activity</li>
+                        <li>Consider tank mixing for enhanced control</li>
+                        <li>Implement tillage operations where appropriate</li>
+                        <li>Monitor for glyphosate resistance in your area</li>
+                    </ul>
+                `,
+        },
+        "johnson-grass": {
+          title: "Johnson Grass Management",
+          content: `
+                    <div style="background: #FFF3E0; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #EF6C00;">
+                        <h4 style="color: #EF6C00; margin-bottom: 10px;">🟡 Medium Priority Weed</h4>
+                        <p>Perennial grass with extensive rhizome system that makes control challenging.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Target rhizome system with systemic herbicides</li>
+                        <li>Apply herbicides when grass is actively growing</li>
+                        <li>Consider multiple applications for established stands</li>
+                        <li>Use crop competition to suppress regrowth</li>
+                        <li>Avoid spreading rhizomes through tillage operations</li>
+                    </ul>
+                `,
+        },
+        "wild-clover": {
+          title: "Wild Clover Management",
+          content: `
+                    <div style="background: #FFF3E0; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #EF6C00;">
+                        <h4 style="color: #EF6C00; margin-bottom: 10px;">🟡 Medium Priority Weed</h4>
+                        <p>Nitrogen-fixing legume that competes with crops but can provide some soil benefits.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Use selective broadleaf herbicides during active growth</li>
+                        <li>Consider benefits vs. competition before treating</li>
+                        <li>Time applications based on crop tolerance</li>
+                        <li>May be beneficial in some cropping systems</li>
+                        <li>Monitor density to determine treatment necessity</li>
+                    </ul>
+                `,
+        },
+        dandelion: {
+          title: "Common Dandelion Management",
+          content: `
+                    <div style="background: #E8F5E9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2E7D32;">
+                        <h4 style="color: #2E7D32; margin-bottom: 10px;">🟢 Low Priority Weed</h4>
+                        <p>Perennial broadleaf with deep taproot. Generally manageable with proper timing.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Best controlled during rosette stage in fall</li>
+                        <li>Use selective broadleaf herbicides</li>
+                        <li>Mechanical removal effective for small populations</li>
+                        <li>Maintain good crop competition</li>
+                        <li>Consider spot treatment rather than broadcast application</li>
+                    </ul>
+                `,
+        },
+        chickweed: {
+          title: "Chickweed Management",
+          content: `
+                    <div style="background: #E8F5E9; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2E7D32;">
+                        <h4 style="color: #2E7D32; margin-bottom: 10px;">🟢 Low Priority Weed</h4>
+                        <p>Small annual broadleaf that thrives in cool, moist conditions. Easy to control.</p>
+                    </div>
+                    <h4>Management Strategy:</h4>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>Pre-emergence control most effective</li>
+                        <li>Light cultivation can be effective for small plants</li>
+                        <li>Post-emergence herbicides work well on young plants</li>
+                        <li>Improve drainage to reduce favorable conditions</li>
+                        <li>Usually not a major economic threat</li>
+                    </ul>
+                `,
+        },
+      };
+
+      // Webinar registration
+      function registerWebinar(webinarId) {
+        const webinar = webinarData[webinarId];
+        if (webinar) {
+          document.getElementById("selectedWebinarTitle").textContent =
+            webinar.title;
+          document.getElementById(
+            "selectedWebinarInfo"
+          ).textContent = `${webinar.date} | Speaker: ${webinar.speaker}`;
+          showModal("registrationModal");
+        }
+      }
+
+      function joinLiveWebinar(webinarId) {
+        showNotification(
+          "Connecting you to the live webinar session...",
+          "success"
+        );
+        // In a real app, this would open the webinar platform
+        setTimeout(() => {
+          showNotification("Webinar platform opened in new window!", "success");
+        }, 2000);
+      }
+
+      function watchRecording(webinarId) {
+        showNotification("Loading recorded webinar...", "success");
+        // In a real app, this would open the recorded session
+        setTimeout(() => {
+          showNotification("Recorded webinar is now playing!", "success");
+        }, 1500);
+      }
+
+      // Learn more about weeds
+      function learnMore(weedId) {
+        const weedInfo = weedManagementData[weedId];
+        if (weedInfo) {
+          document.getElementById("weedDetailTitle").textContent =
+            weedInfo.title;
+          document.getElementById("weedDetailContent").innerHTML =
+            weedInfo.content;
+          showModal("weedDetailModal");
+        }
+      }
+
+      // Feature info functions
+      function showFeatureInfo(feature) {
+        const messages = {
+          "live-sessions":
+            'Join our weekly live webinars every Tuesday and Thursday. Next session: "Spring Weed Management" - Tomorrow at 2 PM EST',
+          resources:
+            "Access over 500 weed identification photos, 50+ management guides, and the latest research publications.",
+          certification:
+            "Earn your Professional Weed Management Certificate with our 8-week comprehensive program.",
+          community:
+            "Connect with 5,000+ farmers and agricultural professionals in our exclusive community forum.",
+        };
+
+        showNotification(
+          messages[feature] || "Feature information coming soon!",
+          "success"
+        );
+      }
+
+      // Mobile menu toggle
+      function toggleMobileMenu() {
+        const navLinks = document.querySelector(".nav-links");
+        navLinks.classList.toggle("active");
+      }
+
+      // Modal functions
+      function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.add("show");
+
+        // Focus management for accessibility
+        const firstInput = modal.querySelector(
+          "input, button, textarea, select"
+        );
+        if (firstInput) {
+          setTimeout(() => firstInput.focus(), 100);
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove("show");
+      }
+
+      // Notification system
+      function showNotification(message, type = "success") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.classList.add("show");
+        }, 100);
+
+        setTimeout(() => {
+          notification.classList.remove("show");
+          setTimeout(() => {
+            if (document.body.contains(notification)) {
+              document.body.removeChild(notification);
+            }
+          }, 300);
+        }, 4000);
+      }
+
+      // Form handling
+      document
+        .getElementById("registrationForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          showNotification(
+            "Registration successful! You will receive a confirmation email shortly.",
+            "success"
+          );
+          closeModal("registrationModal");
+        });
+
+      // Smooth scrolling for navigation
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        showNotification(
+          "Welcome to WeedWise Agricultural Education Center!",
+          "success"
+        );
+
+        // Add hover effects to cards
+        const cards = document.querySelectorAll(
+          ".feature-card, .weed-card, .webinar-card"
+        );
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", function () {
+            this.style.transform = "translateY(-8px) scale(1.02)";
+          });
+
+          card.addEventListener("mouseleave", function () {
+            this.style.transform = "translateY(0) scale(1)";
+          });
+        });
+
+        // Simulate live webinar status
+        setTimeout(() => {
+          const liveElements = document.querySelectorAll(".status-live");
+          liveElements.forEach((el) => {
+            if (Math.random() > 0.5) {
+              el.textContent = "Live - 234 participants";
+            }
+          });
+        }, 3000);
+      });
+
+      // Keyboard accessibility
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          document.querySelectorAll(".modal.show").forEach((modal) => {
+            modal.classList.remove("show");
+          });
+        }
+      });
+
+      // Close modals when clicking outside
+      document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("modal")) {
+          e.target.classList.remove("show");
+        }
+      });
+
+      // Auto-refresh live session status
+      setInterval(() => {
+        const liveButtons = document.querySelectorAll(".btn-live");
+        liveButtons.forEach((btn) => {
+          const participantCount = Math.floor(Math.random() * 50) + 200;
+          if (btn.textContent.includes("participants")) {
+            btn.textContent = `Join Live Session (${participantCount} participants)`;
+          }
+        });
+      }, 30000); // Update every 30 seconds
+    </script>
+  </body>
+</html>

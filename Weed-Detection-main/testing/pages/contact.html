@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us - WeedWise</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0d1117 0%,
+          #1a472a 50%,
+          #22543d 100%
+        );
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle at 20% 20%,
+            rgba(34, 197, 94, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(16, 185, 129, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 90%,
+            rgba(34, 197, 94, 0.05) 0%,
+            transparent 50%
+          );
+        animation: breathe 8s ease-in-out infinite;
+        z-index: -1;
+      }
+
+      @keyframes breathe {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.05);
+        }
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .hero-section {
+        text-align: center;
+        color: #ffffff;
+        margin-bottom: 3rem;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #10b981, #22c55e, #34d399);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5));
+        }
+        to {
+          filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.8));
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        color: #a7f3d0;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-top: 2rem;
+      }
+
+      .contact-form {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        animation: slideInLeft 0.8s ease-out;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .contact-form::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(16, 185, 129, 0.1),
+          transparent
+        );
+        animation: scan 3s linear infinite;
+      }
+
+      @keyframes scan {
+        0% {
+          left: -100%;
+        }
+        100% {
+          left: 100%;
+        }
+      }
+
+      .contact-form:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.6);
+      }
+
+      .contact-info {
+        animation: slideInRight 0.8s ease-out;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        color: #10b981;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .form-group input::placeholder,
+      .form-group textarea::placeholder {
+        color: rgba(167, 243, 208, 0.7);
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        transform: scale(1.02);
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .submit-btn {
+        background: linear-gradient(45deg, #059669, #10b981, #22c55e);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+      }
+
+      .submit-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .submit-btn:hover::before {
+        left: 100%;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+      }
+
+      .contact-card {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .contact-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+          transparent,
+          rgba(16, 185, 129, 0.3),
+          transparent
+        );
+        animation: rotate 4s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .contact-card:hover::before {
+        opacity: 1;
+      }
+
+      .contact-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.6);
+      }
+
+      .contact-card-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .contact-card-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg, #059669, #22c55e);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: white;
+        transition: all 0.3s ease;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .contact-card:hover .contact-card-icon {
+        transform: rotate(360deg) scale(1.2);
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.5);
+      }
+
+      .contact-card h3 {
+        color: #10b981;
+        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
+      }
+
+      .contact-card p {
+        color: rgba(167, 243, 208, 0.9);
+        line-height: 1.5;
+      }
+
+      .floating-leaves {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .leaf {
+        position: absolute;
+        font-size: 2rem;
+        color: rgba(16, 185, 129, 0.3);
+        animation: fall linear infinite;
+      }
+
+      .leaf:nth-child(1) {
+        left: 10%;
+        animation-duration: 8s;
+        animation-delay: 0s;
+      }
+
+      .leaf:nth-child(2) {
+        left: 30%;
+        animation-duration: 10s;
+        animation-delay: 2s;
+      }
+
+      .leaf:nth-child(3) {
+        left: 50%;
+        animation-duration: 9s;
+        animation-delay: 4s;
+      }
+
+      .leaf:nth-child(4) {
+        left: 70%;
+        animation-duration: 11s;
+        animation-delay: 1s;
+      }
+
+      .leaf:nth-child(5) {
+        left: 90%;
+        animation-duration: 7s;
+        animation-delay: 3s;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .success-message {
+        background: linear-gradient(45deg, #059669, #10b981);
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        text-align: center;
+        display: none;
+        animation: successPulse 0.5s ease-out;
+        border: 2px solid rgba(16, 185, 129, 0.5);
+      }
+
+      @keyframes successPulse {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .detection-stats {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        margin-top: 3rem;
+        text-align: center;
+        animation: fadeInUp 1.2s ease-out;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .stat-item {
+        color: white;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-item:hover {
+        transform: scale(1.1);
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #10b981;
+        animation: countUp 2s ease-out;
+      }
+
+      @keyframes countUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .stat-label {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-top: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .contact-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .hero-title {
+          font-size: 2.5rem;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+      }
+
+      .form-group.required label::after {
+        content: " *";
+        color: #ef4444;
+      }
+
+      .char-counter {
+        text-align: right;
+        color: rgba(167, 243, 208, 0.6);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .ai-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 10px;
+        height: 10px;
+        background: #10b981;
+        border-radius: 50%;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0.3;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="animated-bg"></div>
+
+    <div class="floating-leaves">
+      <div class="leaf">🌿</div>
+      <div class="leaf">🍃</div>
+      <div class="leaf">🌱</div>
+      <div class="leaf">🌿</div>
+      <div class="leaf">🍃</div>
+    </div>
+
+    <div class="container">
+      <div class="hero-section">
+        <h1 class="hero-title">🌿 Contact WeedWise</h1>
+        <p class="hero-subtitle">
+          Advanced AI-powered weed detection technology. Let's grow smarter
+          together.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-form">
+          <div class="ai-indicator"></div>
+          <div class="success-message" id="successMessage">
+            🌱 Message detected and sent successfully! Our AI team will respond
+            within 24 hours.
+          </div>
+
+          <form id="contactForm">
+            <div class="form-group required">
+              <label for="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div class="form-group required">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Detection Interest</label>
+              <select id="subject" name="subject">
+                <option value="">Select your interest</option>
+                <option value="commercial">Commercial Agriculture</option>
+                <option value="research">Research & Development</option>
+                <option value="personal">Personal Garden</option>
+                <option value="industrial">Industrial Hemp</option>
+                <option value="partnership">Partnership Inquiry</option>
+                <option value="support">Technical Support</option>
+              </select>
+            </div>
+
+            <div class="form-group required">
+              <label for="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                placeholder="Tell us about your weed detection needs..."
+                required
+                maxlength="1000"
+              ></textarea>
+              <div class="char-counter">
+                <span id="charCount">0</span>/1000 characters
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn">🚀 Send Message</button>
+          </form>
+        </div>
+
+        <div class="contact-info">
+          <div
+            class="contact-card"
+            onclick="window.open('mailto:detect@greenvision-ai.com')"
+          >
+            <div class="contact-card-content">
+              <div class="contact-card-icon">📧</div>
+              <h3>Email Detection</h3>
+              <p>detect@greenvision-ai.com</p>
+              <p>AI-powered responses within 24hrs</p>
+            </div>
+          </div>
+
+          <div class="contact-card" onclick="window.open('tel:+15551234567')">
+            <div class="contact-card-content">
+              <div class="contact-card-icon">📞</div>
+              <h3>Call Support</h3>
+              <p>+1 (555) WEED-AI7</p>
+              <p>Mon-Fri, 9AM-6PM EST</p>
+            </div>
+          </div>
+
+          <div
+            class="contact-card"
+            onclick="window.open('https://maps.google.com/?q=420+Green+Tech+Ave+Denver')"
+          >
+            <div class="contact-card-content">
+              <div class="contact-card-icon">📍</div>
+              <h3>Visit Our Lab</h3>
+              <p>420 Green Tech Avenue</p>
+              <p>Denver, CO 80202</p>
+            </div>
+          </div>
+
+          <div
+            class="contact-card"
+            onclick="window.open('https://chat.greenvision-ai.com')"
+          >
+            <div class="contact-card-content">
+              <div class="contact-card-icon">🤖</div>
+              <h3>AI Live Chat</h3>
+              <p>Chat with GreenBot AI</p>
+              <p>Available 24/7</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detection-stats">
+        <h2 style="color: #10b981; margin-bottom: 1rem">
+          🌿 Detection Performance
+        </h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number" id="accuracy">97.5</div>
+            <div class="stat-label">% Accuracy</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="detections">2.3M</div>
+            <div class="stat-label">Plants Analyzed</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="farms">1,247</div>
+            <div class="stat-label">Farms Monitored</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="saved">$14.8M</div>
+            <div class="stat-label">Cost Savings</div>
+          </div>
+        </div>
+        <p style="margin-top: 2rem; color: #a7f3d0; opacity: 0.8">
+          🚀 Powered by cutting-edge AI algorithms<br />
+          🌱 Real-time detection and analysis<br />
+          📊 Comprehensive reporting and insights<br />
+          🔒 Secure and compliant processing
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Character counter for message textarea
+      const messageTextarea = document.getElementById("message");
+      const charCount = document.getElementById("charCount");
+
+      messageTextarea.addEventListener("input", function () {
+        const count = this.value.length;
+        charCount.textContent = count;
+
+        if (count > 800) {
+          charCount.style.color = "#ef4444";
+        } else {
+          charCount.style.color = "rgba(167, 243, 208, 0.6)";
+        }
+      });
+
+      // Form validation and submission
+      const form = document.getElementById("contactForm");
+      const successMessage = document.getElementById("successMessage");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+
+        // Basic validation
+        if (!data.name || !data.email || !data.message) {
+          alert("Please fill in all required fields for optimal detection.");
+          return;
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+          alert("Please enter a valid email address for our AI to process.");
+          return;
+        }
+
+        // Simulate AI processing
+        const submitBtn = form.querySelector(".submit-btn");
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = "🤖 AI Processing...";
+        submitBtn.disabled = true;
+
+        // Simulate API call delay with multiple stages
+        setTimeout(() => {
+          submitBtn.innerHTML = "🌱 Analyzing...";
+        }, 500);
+
+        setTimeout(() => {
+          submitBtn.innerHTML = "✅ Detected!";
+        }, 1500);
+
+        setTimeout(() => {
+          successMessage.style.display = "block";
+          form.reset();
+          charCount.textContent = "0";
+          charCount.style.color = "rgba(167, 243, 208, 0.6)";
+
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 5000);
+        }, 2500);
+      });
+
+      // Enhanced input focus effects
+      const inputs = document.querySelectorAll("input, textarea, select");
+      inputs.forEach((input) => {
+        input.addEventListener("focus", function () {
+          this.parentElement.querySelector("label").style.transform =
+            "translateY(-2px) scale(1.05)";
+          this.parentElement.querySelector("label").style.color = "#10b981";
+          this.parentElement.querySelector("label").style.textShadow =
+            "0 0 10px rgba(16, 185, 129, 0.5)";
+        });
+
+        input.addEventListener("blur", function () {
+          this.parentElement.querySelector("label").style.transform =
+            "translateY(0) scale(1)";
+          this.parentElement.querySelector("label").style.color = "#10b981";
+          this.parentElement.querySelector("label").style.textShadow = "none";
+        });
+      });
+
+      // Enhanced ripple effect for contact cards
+      const contactCards = document.querySelectorAll(".contact-card");
+      contactCards.forEach((card) => {
+        card.addEventListener("click", function (e) {
+          const ripple = document.createElement("span");
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+
+          ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(16, 185, 129, 0.4);
+                    pointer-events: none;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    z-index: 1;
+                `;
+
+          this.appendChild(ripple);
+
+          setTimeout(() => ripple.remove(), 600);
+        });
+      });
+
+      // Add CSS for enhanced ripple animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+      document.head.appendChild(style);
+
+      // Enhanced mouse tracking with green trail effect
+      let mouseTrail = [];
+      document.addEventListener("mousemove", function (e) {
+        // Add green particle trail
+        if (mouseTrail.length > 10) {
+          const oldTrail = mouseTrail.shift();
+          if (oldTrail && oldTrail.parentNode) {
+            oldTrail.parentNode.removeChild(oldTrail);
+          }
+        }
+
+        const trail = document.createElement("div");
+        trail.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: radial-gradient(circle, #10b981, transparent);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1000;
+                left: ${e.clientX - 2}px;
+                top: ${e.clientY - 2}px;
+                animation: fadeTrail 1s ease-out forwards;
+            `;
+
+        document.body.appendChild(trail);
+        mouseTrail.push(trail);
+      });
+
+      // Add trail animation
+      const trailStyle = document.createElement("style");
+      trailStyle.textContent = `
+            @keyframes fadeTrail {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0; transform: scale(0); }
+            }
+        `;
+      document.head.appendChild(trailStyle);
+
+      // Animate statistics counter
+      function animateCounter(element, target, suffix = "") {
+        let current = 0;
+        const increment = target / 100;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current) + suffix;
+        }, 20);
+      }
+
+      // Trigger counter animations when stats section is visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(document.getElementById("accuracy"), 97.5, "%");
+            animateCounter(document.getElementById("detections"), 2.3, "M+");
+            animateCounter(document.getElementById("farms"), 1247, "");
+            animateCounter(document.getElementById("saved"), 14.8, "M+");
+            observer.disconnect();
+          }
+        });
+      });
+
+      observer.observe(document.querySelector(".detection-stats"));
+
+      // Add random leaf generation
+      setInterval(() => {
+        if (Math.random() < 0.3) {
+          const leaf = document.createElement("div");
+          leaf.className = "leaf";
+          leaf.textContent = ["🌿", "🍃", "🌱"][Math.floor(Math.random() * 3)];
+          leaf.style.left = Math.random() * 100 + "%";
+          leaf.style.animationDuration = 6 + Math.random() * 6 + "s";
+          document.querySelector(".floating-leaves").appendChild(leaf);
+
+          setTimeout(() => {
+            if (leaf.parentNode) {
+              leaf.parentNode.removeChild(leaf);
+            }
+          }, 12000);
+        }
+      }, 3000);
+    </script>
+  </body>
+</html>
