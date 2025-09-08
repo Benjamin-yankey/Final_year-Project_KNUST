@@ -479,6 +479,7 @@
         border-radius: 20px;
         padding: 25px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        position: relative;
       }
 
       /* Add decorative top border similar to image cards */
@@ -1965,13 +1966,7 @@
         });
       }
 
-      modal.style.transition = "opacity 0.3s ease";
-      modalContent.style.transition = "transform 0.3s ease";
-
-      requestAnimationFrame(() => {
-        modal.style.opacity = "1";
-        modalContent.style.transform = "scale(1)";
-      });
+      
 
       // Loading functions
       function showLoading(title, description) {
