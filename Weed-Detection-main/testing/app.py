@@ -155,16 +155,18 @@ def process_frame(frame):
             (w, h) = (boxes[i][2], boxes[i][3])
             detected_label = LABELS[classIDs[i]]
             accuracy = confidences[i]
-            color = [int(c) for c in COLORS[classIDs[i]]]
-            
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-            text = f"{detected_label.upper()} : {accuracy:.2f}"
-            cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-            
+            # Classify as crop or weed and choose consistent colors
+            detection_type = 'crop' if any(word in detected_label.lower() for word in ['crop', 'wheat', 'corn', 'soybean', 'rice', 'plant']) else 'weed'
+            color = (46, 139, 87) if detection_type == 'crop' else (34, 87, 255)  # BGR: greenish for crop, reddish/orange for weed
+
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
+            label_text = f"{detection_type.upper()} {accuracy * 100:.1f}%"
+            cv2.putText(frame, label_text, (x, max(y - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+
             detections.append({
                 'name': detected_label.capitalize(),
                 'confidence': float(accuracy),
-                'type': 'crop' if any(word in detected_label.lower() for word in ['crop', 'wheat', 'corn', 'soybean', 'rice', 'plant']) else 'weed',
+                'type': detection_type,
                 'bbox': [x, y, w, h],
                 'center': [x + w//2, y + h//2]  # Center point for spraying coordinates
             })
@@ -289,8 +291,9 @@ def process_video_file(video_path, filename):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
-    # Setup video writer for processed output
-    output_path = f"processed_{filename}"
+    # Setup video writer for processed output (force MP4 container)
+    name_root, _ = os.path.splitext(filename)
+    output_path = f"processed_{name_root}.mp4"
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
     
@@ -301,6 +304,7 @@ def process_video_file(video_path, filename):
     
     # Process every nth frame to optimize performance
     frame_skip = max(1, fps // 5)  # Process 5 frames per second max
+    last_detections = []
     
     while True:
         ret, frame = cap.read()
@@ -313,17 +317,27 @@ def process_video_file(video_path, filename):
         if frames_processed % frame_skip == 0:
             processed_frame, detections, processing_time = process_frame(frame.copy())
             total_detections += len(detections)
-            
+            last_detections = detections
+
             frame_detections.append({
                 'frame_number': frames_processed,
                 'timestamp': frames_processed / fps,
                 'detections': detections,
                 'processing_time': processing_time
             })
-            
+
             out.write(processed_frame)
         else:
-            out.write(frame)
+            # Draw last detections on skipped frames for consistent overlays
+            overlay_frame = frame.copy()
+            for d in last_detections:
+                x, y, w, h = d['bbox']
+                detection_type = d.get('type', 'weed')
+                color = (46, 139, 87) if detection_type == 'crop' else (34, 87, 255)
+                cv2.rectangle(overlay_frame, (x, y), (x + w, y + h), color, 3)
+                label_text = f"{detection_type.upper()} {d.get('confidence', 0) * 100:.1f}%"
+                cv2.putText(overlay_frame, label_text, (x, max(y - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+            out.write(overlay_frame)
     
     cap.release()
     out.release()
