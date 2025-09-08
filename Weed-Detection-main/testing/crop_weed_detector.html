@@ -481,6 +481,20 @@
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
       }
 
+      /* Add decorative top border similar to image cards */
+      .video-analysis::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2e8b57, #3cb371, #ff9800, #ff5722);
+        opacity: 0.8;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+      }
+
       .spray-coordinates {
         max-height: 400px;
         overflow-y: auto;
@@ -1263,8 +1277,10 @@
         // Show selected section
         document.getElementById(`${tabName}-section`).classList.add("active");
 
-        // Activate clicked tab button
-        event.target.classList.add("active");
+        // Activate clicked tab button (guard for undefined event in some browsers)
+        if (typeof event !== "undefined" && event && event.target) {
+          event.target.classList.add("active");
+        }
 
         currentAnalysisType = tabName;
 
@@ -1571,17 +1587,29 @@
 
         videoResultsSection.style.display = "grid";
 
-        // Show processed video if available
+        // Clear previous sources and set new one
+        processedVideo.innerHTML = "";
+        const sourceEl = document.createElement("source");
+        sourceEl.type = "video/mp4";
+
         if (videoResults.processed_video) {
-          processedVideo.src = `data:video/mp4;base64,${videoResults.processed_video}`;
-          processedVideo.style.display = "block";
-        } else {
-          // If no processed video, show the original uploaded video
-          if (selectedVideo) {
-            processedVideo.src = URL.createObjectURL(selectedVideo);
-            processedVideo.style.display = "block";
-          }
+          sourceEl.src = `data:video/mp4;base64,${videoResults.processed_video}`;
+        } else if (selectedVideo) {
+          sourceEl.src = URL.createObjectURL(selectedVideo);
         }
+
+        processedVideo.appendChild(sourceEl);
+        processedVideo.style.display = "block";
+        processedVideo.muted = true;
+        processedVideo.load();
+        processedVideo.play().catch(() => {});
+
+        processedVideo.onerror = () => {
+          showError(
+            "Unable to load the video preview. Please try a smaller video or different format.",
+            "videoErrorMessage"
+          );
+        };
       }
 
       function calculateVideoMetrics(videoResults) {
