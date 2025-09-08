@@ -424,8 +424,12 @@ function setupVideoOverlay(videoEl, canvasEl, videoResults) {
 
   function resizeCanvasToVideo() {
     const rect = videoEl.getBoundingClientRect();
-    canvasEl.width = rect.width;
-    canvasEl.height = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    canvasEl.style.width = Math.round(rect.width) + "px";
+    canvasEl.style.height = Math.round(rect.height) + "px";
+    canvasEl.width = Math.round(rect.width * dpr);
+    canvasEl.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function getDetectionsForTime(currentSec) {
