@@ -12,6 +12,7 @@
       href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMkU4QjU3O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzQ0IzNzE7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9InVybCgjYmcpIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+MvzwvdGV4dD4KPC9zdmc+"
     />
 
+    <link rel="stylesheet" href="./assets/css/styles.css" />
     <style>
       * {
         margin: 0;
@@ -1090,6 +1091,16 @@
           <button class="control-btn" onclick="exportResults()">
             💾 Export Results
           </button>
+          <button class="control-btn" onclick="downloadProcessedVideo()">
+            ⬇️ Download Video
+          </button>
+          <label class="control-label">
+            <input type="checkbox" id="toggleOverlay" /> Show Overlays
+          </label>
+          <label class="control-label">
+            Confidence: <span id="confidenceValue">0%</span>
+            <input type="range" id="confidenceThreshold" min="0" max="100" step="1" value="0" />
+          </label>
         </div>
 
         <div class="error-message" id="videoErrorMessage"></div>
@@ -1260,6 +1271,7 @@
       </div>
     </footer>
 
+    <script src="./assets/js/app.js"></script>
     <script>
       let selectedFiles = [];
       let selectedVideo = null;
