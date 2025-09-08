@@ -5,6 +5,11 @@ let currentAnalysisType = "images";
 let overlayAnimationId = null;
 let overlayEnabled = true;
 let confidenceThreshold = 0; // 0..1
+let showCrop = true;
+let showWeed = true;
+let heatmapEnabled = false;
+let autoPauseOnDetection = false;
+let lastDetectionsForCsv = [];
 
 function switchTab(tabName) {
   document.querySelectorAll(".content-section").forEach((section) => {
@@ -233,6 +238,27 @@ function displayVideoResults(videoResults) {
   processedVideo.onloadeddata = () => {
     processedVideo.currentTime = 0;
     setupVideoOverlay(processedVideo, overlayCanvas, videoResults);
+    // Hook up dynamic controls
+    const rateSel = document.getElementById("playbackRate");
+    if (rateSel) {
+      processedVideo.playbackRate = parseFloat(rateSel.value || "1");
+      rateSel.onchange = () => (processedVideo.playbackRate = parseFloat(rateSel.value || "1"));
+    }
+    const stepBack = document.getElementById("stepBackBtn");
+    const stepFwd = document.getElementById("stepFwdBtn");
+    if (stepBack) stepBack.onclick = () => (processedVideo.currentTime = Math.max(0, processedVideo.currentTime - 1));
+    if (stepFwd) stepFwd.onclick = () => (processedVideo.currentTime = Math.min(processedVideo.duration || processedVideo.currentTime + 1, processedVideo.currentTime + 1));
+    const pipBtn = document.getElementById("pipBtn");
+    if (pipBtn && document.pictureInPictureEnabled) pipBtn.onclick = async () => {
+      try {
+        if (document.pictureInPictureElement) await document.exitPictureInPicture();
+        else await processedVideo.requestPictureInPicture();
+      } catch {}
+    };
+    const snapshotBtn = document.getElementById("snapshotBtn");
+    if (snapshotBtn) snapshotBtn.onclick = () => snapshotCurrentFrame(processedVideo, overlayCanvas);
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+    if (exportCsvBtn) exportCsvBtn.onclick = () => exportDetectionsCsv(lastDetectionsForCsv);
   };
   processedVideo.onerror = () => {
     if (selectedVideo) {
@@ -421,6 +447,7 @@ function setupVideoOverlay(videoEl, canvasEl, videoResults) {
   const baseWidth = parts.length === 2 ? parseInt(parts[0], 10) : videoEl.videoWidth || 1920;
   const baseHeight = parts.length === 2 ? parseInt(parts[1], 10) : videoEl.videoHeight || 1080;
   const frameDetections = (videoResults && videoResults.frame_detections) || [];
+  lastDetectionsForCsv = frameDetections;
 
   function resizeCanvasToVideo() {
     const rect = videoEl.getBoundingClientRect();
@@ -457,9 +484,31 @@ function setupVideoOverlay(videoEl, canvasEl, videoResults) {
     const detections = getDetectionsForTime(currentTime);
     const scaleX = canvasEl.width / baseWidth;
     const scaleY = canvasEl.height / baseHeight;
+    let paused = false;
+    // Heatmap layer
+    if (heatmapEnabled && detections.length) {
+      detections.forEach((d) => {
+        if (typeof d.confidence === "number" && d.confidence < confidenceThreshold) return;
+        if (d.type === "crop" && !showCrop) return;
+        if (d.type === "weed" && !showWeed) return;
+        const [x, y, w, h] = d.bbox;
+        const sx = x * scaleX;
+        const sy = y * scaleY;
+        const sw = w * scaleX;
+        const sh = h * scaleY;
+        const grad = ctx.createRadialGradient(sx + sw / 2, sy + sh / 2, 5, sx + sw / 2, sy + sh / 2, Math.max(sw, sh));
+        grad.addColorStop(0, "rgba(255, 87, 34, 0.35)");
+        grad.addColorStop(1, "rgba(255, 87, 34, 0)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(sx, sy, sw, sh);
+      });
+    }
+
     detections.forEach((d) => {
       if (!overlayEnabled) return;
       if (typeof d.confidence === "number" && d.confidence < confidenceThreshold) return;
+      if (d.type === "crop" && !showCrop) return;
+      if (d.type === "weed" && !showWeed) return;
       const [x, y, w, h] = d.bbox;
       const detectionType = d.type === "crop" ? "crop" : "weed";
       const color = detectionType === "crop" ? "#2e8b57" : "#ff5722";
@@ -477,6 +526,10 @@ function setupVideoOverlay(videoEl, canvasEl, videoResults) {
       ctx.lineWidth = 4;
       ctx.strokeText(label, sx, Math.max(sy - 6, 16));
       ctx.fillText(label, sx, Math.max(sy - 6, 16));
+      if (!paused && autoPauseOnDetection) {
+        videoEl.pause();
+        paused = true;
+      }
     });
     overlayAnimationId = requestAnimationFrame(drawOverlay);
   }
@@ -580,5 +633,70 @@ document.addEventListener("DOMContentLoaded", function () {
     thresholdInput.addEventListener("input", (e) => setVal(e.target.value));
     setVal(thresholdInput.value || 0);
   }
+  const filterCropEl = document.getElementById("filterCrop");
+  const filterWeedEl = document.getElementById("filterWeed");
+  if (filterCropEl) filterCropEl.addEventListener("change", (e) => (showCrop = !!e.target.checked));
+  if (filterWeedEl) filterWeedEl.addEventListener("change", (e) => (showWeed = !!e.target.checked));
+  const heatmapToggle = document.getElementById("heatmapToggle");
+  if (heatmapToggle) heatmapToggle.addEventListener("change", (e) => (heatmapEnabled = !!e.target.checked));
+  const autoPauseToggle = document.getElementById("autoPauseToggle");
+  if (autoPauseToggle) autoPauseToggle.addEventListener("change", (e) => (autoPauseOnDetection = !!e.target.checked));
 });
+
+// Snapshots include overlays
+function snapshotCurrentFrame(videoEl, canvasEl) {
+  try {
+    const temp = document.createElement("canvas");
+    const rect = videoEl.getBoundingClientRect();
+    temp.width = Math.round(rect.width);
+    temp.height = Math.round(rect.height);
+    const tctx = temp.getContext("2d");
+    tctx.drawImage(videoEl, 0, 0, temp.width, temp.height);
+    tctx.drawImage(canvasEl, 0, 0, temp.width, temp.height);
+    const url = temp.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `snapshot_${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch {}
+}
+
+function exportDetectionsCsv(frameDetections) {
+  if (!frameDetections || !frameDetections.length) return;
+  const rows = [
+    ["frame_number", "timestamp", "type", "name", "confidence", "x", "y", "w", "h"].join(","),
+  ];
+  frameDetections.forEach((f) => {
+    (f.detections || []).forEach((d) => {
+      if (typeof d.confidence === "number" && d.confidence < confidenceThreshold) return;
+      if (d.type === "crop" && !showCrop) return;
+      if (d.type === "weed" && !showWeed) return;
+      const [x, y, w, h] = d.bbox || [];
+      rows.push(
+        [
+          f.frame_number,
+          f.timestamp,
+          d.type,
+          d.name || "",
+          (d.confidence * 100).toFixed(1),
+          x,
+          y,
+          w,
+          h,
+        ].join(",")
+      );
+    });
+  });
+  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `detections_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 

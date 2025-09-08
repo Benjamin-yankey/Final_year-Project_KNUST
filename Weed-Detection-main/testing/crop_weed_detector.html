@@ -1101,6 +1101,31 @@
             Confidence: <span id="confidenceValue">0%</span>
             <input type="range" id="confidenceThreshold" min="0" max="100" step="1" value="0" />
           </label>
+          <label class="control-label">
+            Show: 
+            <input type="checkbox" id="filterCrop" checked /> Crop
+            <input type="checkbox" id="filterWeed" checked /> Weed
+          </label>
+          <label class="control-label">
+            Heatmap <input type="checkbox" id="heatmapToggle" />
+          </label>
+          <label class="control-label">
+            Speed
+            <select id="playbackRate">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </label>
+          <button class="control-btn" id="stepBackBtn">⏮️ -1s</button>
+          <button class="control-btn" id="stepFwdBtn">⏭️ +1s</button>
+          <label class="control-label">
+            Auto-pause on detection <input type="checkbox" id="autoPauseToggle" />
+          </label>
+          <button class="control-btn" id="snapshotBtn">🖼️ Snapshot</button>
+          <button class="control-btn" id="exportCsvBtn">📄 Export CSV</button>
+          <button class="control-btn" id="pipBtn">🪟 PiP</button>
         </div>
 
         <div class="error-message" id="videoErrorMessage"></div>
