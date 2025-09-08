@@ -1588,29 +1588,64 @@
 
         videoResultsSection.style.display = "grid";
 
-        // Clear previous sources and set new one
-        processedVideo.innerHTML = "";
-        const sourceEl = document.createElement("source");
-        sourceEl.type = "video/mp4";
+        // Clear previous sources and set new one using Blob URLs for reliability
+        processedVideo.pause();
+        processedVideo.removeAttribute("src");
+        while (processedVideo.firstChild) processedVideo.removeChild(processedVideo.firstChild);
 
-        if (videoResults.processed_video) {
-          sourceEl.src = `data:video/mp4;base64,${videoResults.processed_video}`;
-        } else if (selectedVideo) {
-          sourceEl.src = URL.createObjectURL(selectedVideo);
+        let blobUrl = "";
+        try {
+          if (videoResults.processed_video) {
+            const processedBlob = base64ToBlob(videoResults.processed_video, "video/mp4");
+            blobUrl = URL.createObjectURL(processedBlob);
+          } else if (selectedVideo) {
+            blobUrl = URL.createObjectURL(selectedVideo);
+          }
+        } catch (e) {
+          console.error("Video Blob creation failed", e);
         }
 
-        processedVideo.appendChild(sourceEl);
-        processedVideo.style.display = "block";
-        processedVideo.muted = true;
-        processedVideo.load();
-        processedVideo.play().catch(() => {});
+        if (blobUrl) {
+          processedVideo.src = blobUrl;
+        }
 
-        processedVideo.onerror = () => {
-          showError(
-            "Unable to load the video preview. Please try a smaller video or different format.",
-            "videoErrorMessage"
-          );
+        processedVideo.style.display = "block";
+        processedVideo.style.visibility = "visible";
+        processedVideo.muted = true;
+        processedVideo.onloadeddata = () => {
+          processedVideo.currentTime = 0;
         };
+        processedVideo.onerror = () => {
+          if (selectedVideo) {
+            // Fallback to original video file if processed preview fails
+            const fallbackUrl = URL.createObjectURL(selectedVideo);
+            processedVideo.src = fallbackUrl;
+            processedVideo.load();
+          } else {
+            showError(
+              "Unable to load the video preview. Please try a smaller video or different format.",
+              "videoErrorMessage"
+            );
+          }
+        };
+        processedVideo.load();
+      }
+
+      // Convert Base64 (no data: prefix) to Blob
+      function base64ToBlob(base64, mimeType) {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+        const sliceSize = 1024;
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+        return new Blob(byteArrays, { type: mimeType || "application/octet-stream" });
       }
 
       function calculateVideoMetrics(videoResults) {
