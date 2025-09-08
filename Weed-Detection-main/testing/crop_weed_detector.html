@@ -12,6 +12,7 @@
       href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMkU4QjU3O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzQ0IzNzE7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9InVybCgjYmcpIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+8J+MvzwvdGV4dD4KPC9zdmc+"
     />
 
+    <link rel="stylesheet" href="./assets/css/styles.css" />
     <style>
       * {
         margin: 0;
@@ -479,6 +480,21 @@
         border-radius: 20px;
         padding: 25px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        position: relative;
+      }
+
+      /* Add decorative top border similar to image cards */
+      .video-analysis::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2e8b57, #3cb371, #ff9800, #ff5722);
+        opacity: 0.8;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
       }
 
       .spray-coordinates {
@@ -1075,6 +1091,41 @@
           <button class="control-btn" onclick="exportResults()">
             💾 Export Results
           </button>
+          <button class="control-btn" onclick="downloadProcessedVideo()">
+            ⬇️ Download Video
+          </button>
+          <label class="control-label">
+            <input type="checkbox" id="toggleOverlay" /> Show Overlays
+          </label>
+          <label class="control-label">
+            Confidence: <span id="confidenceValue">0%</span>
+            <input type="range" id="confidenceThreshold" min="0" max="100" step="1" value="0" />
+          </label>
+          <label class="control-label">
+            Show: 
+            <input type="checkbox" id="filterCrop" checked /> Crop
+            <input type="checkbox" id="filterWeed" checked /> Weed
+          </label>
+          <label class="control-label">
+            Heatmap <input type="checkbox" id="heatmapToggle" />
+          </label>
+          <label class="control-label">
+            Speed
+            <select id="playbackRate">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
+          </label>
+          <button class="control-btn" id="stepBackBtn">⏮️ -1s</button>
+          <button class="control-btn" id="stepFwdBtn">⏭️ +1s</button>
+          <label class="control-label">
+            Auto-pause on detection <input type="checkbox" id="autoPauseToggle" />
+          </label>
+          <button class="control-btn" id="snapshotBtn">🖼️ Snapshot</button>
+          <button class="control-btn" id="exportCsvBtn">📄 Export CSV</button>
+          <button class="control-btn" id="pipBtn">🪟 PiP</button>
         </div>
 
         <div class="error-message" id="videoErrorMessage"></div>
@@ -1137,9 +1188,12 @@
               📊 Video Analysis
             </h3>
             <div id="videoStats"></div>
-            <video class="video-player" id="processedVideo" controls>
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-player" id="videoPlayerWrapper" style="position: relative;">
+              <video id="processedVideo" controls style="display:block; width:100%; border-radius: 15px;">
+                Your browser does not support the video tag.
+              </video>
+              <canvas id="videoOverlayCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+            </div>
           </div>
 
           <div class="video-analysis">
@@ -1242,6 +1296,7 @@
       </div>
     </footer>
 
+    <script src="./assets/js/app.js"></script>
     <script>
       let selectedFiles = [];
       let selectedVideo = null;
@@ -1263,8 +1318,10 @@
         // Show selected section
         document.getElementById(`${tabName}-section`).classList.add("active");
 
-        // Activate clicked tab button
-        event.target.classList.add("active");
+        // Activate clicked tab button (guard for undefined event in some browsers)
+        if (typeof event !== "undefined" && event && event.target) {
+          event.target.classList.add("active");
+        }
 
         currentAnalysisType = tabName;
 
@@ -1495,6 +1552,7 @@
         const videoStatsDiv = document.getElementById("videoStats");
         const sprayCoordinatesDiv = document.getElementById("sprayCoordinates");
         const processedVideo = document.getElementById("processedVideo");
+        const overlayCanvas = document.getElementById("videoOverlayCanvas");
 
         // Display video statistics
         videoStatsDiv.innerHTML = `
@@ -1571,17 +1629,158 @@
 
         videoResultsSection.style.display = "grid";
 
-        // Show processed video if available
-        if (videoResults.processed_video) {
-          processedVideo.src = `data:video/mp4;base64,${videoResults.processed_video}`;
-          processedVideo.style.display = "block";
-        } else {
-          // If no processed video, show the original uploaded video
-          if (selectedVideo) {
-            processedVideo.src = URL.createObjectURL(selectedVideo);
-            processedVideo.style.display = "block";
+        // Clear previous sources and set new one using Blob URLs for reliability
+        processedVideo.pause();
+        processedVideo.removeAttribute("src");
+        while (processedVideo.firstChild) processedVideo.removeChild(processedVideo.firstChild);
+
+        let blobUrl = "";
+        try {
+          if (videoResults.processed_video) {
+            const processedBlob = base64ToBlob(videoResults.processed_video, "video/mp4");
+            blobUrl = URL.createObjectURL(processedBlob);
+          } else if (selectedVideo) {
+            blobUrl = URL.createObjectURL(selectedVideo);
           }
+        } catch (e) {
+          console.error("Video Blob creation failed", e);
         }
+
+        if (blobUrl) {
+          processedVideo.src = blobUrl;
+        }
+
+        processedVideo.style.display = "block";
+        processedVideo.style.visibility = "visible";
+        processedVideo.muted = true;
+        processedVideo.onloadeddata = () => {
+          processedVideo.currentTime = 0;
+          // Initialize overlay after metadata is ready
+          setupVideoOverlay(processedVideo, overlayCanvas, videoResults);
+        };
+        processedVideo.onerror = () => {
+          if (selectedVideo) {
+            // Fallback to original video file if processed preview fails
+            const fallbackUrl = URL.createObjectURL(selectedVideo);
+            processedVideo.src = fallbackUrl;
+            processedVideo.load();
+          } else {
+            showError(
+              "Unable to load the video preview. Please try a smaller video or different format.",
+              "videoErrorMessage"
+            );
+          }
+        };
+        processedVideo.load();
+      }
+
+      // Convert Base64 (no data: prefix) to Blob
+      function base64ToBlob(base64, mimeType) {
+        const byteCharacters = atob(base64);
+        const byteArrays = [];
+        const sliceSize = 1024;
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+        return new Blob(byteArrays, { type: mimeType || "application/octet-stream" });
+      }
+
+      // ----- Video overlay drawing -----
+      let overlayAnimationId = null;
+
+      function setupVideoOverlay(videoEl, canvasEl, videoResults) {
+        if (!canvasEl || !videoEl) return;
+
+        const ctx = canvasEl.getContext("2d");
+        const resolution = (videoResults && videoResults.video_stats && videoResults.video_stats.resolution) || "";
+        const parts = resolution.split("x");
+        const baseWidth = parts.length === 2 ? parseInt(parts[0], 10) : videoEl.videoWidth || 1920;
+        const baseHeight = parts.length === 2 ? parseInt(parts[1], 10) : videoEl.videoHeight || 1080;
+        const frameDetections = (videoResults && videoResults.frame_detections) || [];
+
+        function resizeCanvasToVideo() {
+          const rect = videoEl.getBoundingClientRect();
+          canvasEl.width = rect.width;
+          canvasEl.height = rect.height;
+        }
+
+        function getDetectionsForTime(currentSec) {
+          if (!frameDetections.length) return [];
+          let candidate = frameDetections[0];
+          for (let i = 1; i < frameDetections.length; i++) {
+            const f = frameDetections[i];
+            if (f.timestamp <= currentSec) candidate = f;
+            else break;
+          }
+          return candidate.detections || [];
+        }
+
+        function drawOverlay() {
+          const rect = videoEl.getBoundingClientRect();
+          if (canvasEl.width !== rect.width || canvasEl.height !== rect.height) {
+            resizeCanvasToVideo();
+          }
+
+          ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+          if (!frameDetections.length || videoEl.paused || videoEl.readyState < 2) {
+            overlayAnimationId = requestAnimationFrame(drawOverlay);
+            return;
+          }
+
+          const currentTime = videoEl.currentTime;
+          const detections = getDetectionsForTime(currentTime);
+
+          const scaleX = canvasEl.width / baseWidth;
+          const scaleY = canvasEl.height / baseHeight;
+
+          detections.forEach((d) => {
+            const [x, y, w, h] = d.bbox;
+            const detectionType = d.type === "crop" ? "crop" : "weed";
+            const color = detectionType === "crop" ? "#2e8b57" : "#ff5722";
+            const sx = x * scaleX;
+            const sy = y * scaleY;
+            const sw = w * scaleX;
+            const sh = h * scaleY;
+
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = color;
+            ctx.strokeRect(sx, sy, sw, sh);
+
+            const label = `${detectionType.toUpperCase()} ${(d.confidence * 100).toFixed(1)}%`;
+            ctx.font = "16px Segoe UI, Tahoma, sans-serif";
+            ctx.fillStyle = color;
+            ctx.strokeStyle = "rgba(255,255,255,0.9)";
+            ctx.lineWidth = 4;
+            ctx.strokeText(label, sx, Math.max(sy - 6, 16));
+            ctx.fillText(label, sx, Math.max(sy - 6, 16));
+          });
+
+          overlayAnimationId = requestAnimationFrame(drawOverlay);
+        }
+
+        // Set up listeners
+        resizeCanvasToVideo();
+        if (overlayAnimationId) cancelAnimationFrame(overlayAnimationId);
+        overlayAnimationId = requestAnimationFrame(drawOverlay);
+
+        window.addEventListener("resize", resizeCanvasToVideo);
+        videoEl.addEventListener("play", () => {
+          if (overlayAnimationId) cancelAnimationFrame(overlayAnimationId);
+          overlayAnimationId = requestAnimationFrame(drawOverlay);
+        });
+        videoEl.addEventListener("pause", () => {
+          if (overlayAnimationId) cancelAnimationFrame(overlayAnimationId);
+        });
+        videoEl.addEventListener("ended", () => {
+          if (overlayAnimationId) cancelAnimationFrame(overlayAnimationId);
+        });
       }
 
       function calculateVideoMetrics(videoResults) {
@@ -1937,13 +2136,7 @@
         });
       }
 
-      modal.style.transition = "opacity 0.3s ease";
-      modalContent.style.transition = "transform 0.3s ease";
-
-      requestAnimationFrame(() => {
-        modal.style.opacity = "1";
-        modalContent.style.transform = "scale(1)";
-      });
+      
 
       // Loading functions
       function showLoading(title, description) {
