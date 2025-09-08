@@ -157,7 +157,10 @@ def process_frame(frame):
             accuracy = confidences[i]
             # Classify as crop or weed and choose consistent colors
             detection_type = 'crop' if any(word in detected_label.lower() for word in ['crop', 'wheat', 'corn', 'soybean', 'rice', 'plant']) else 'weed'
-            color = (46, 139, 87) if detection_type == 'crop' else (34, 87, 255)  # BGR: greenish for crop, reddish/orange for weed
+            # Use exact brand colors (OpenCV expects BGR)
+            # Crop green #2e8b57 -> RGB(46,139,87) => BGR(87,139,46)
+            # Weed orange/red #ff5722 -> RGB(255,87,34) => BGR(34,87,255)
+            color = (87, 139, 46) if detection_type == 'crop' else (34, 87, 255)
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
             label_text = f"{detection_type.upper()} {accuracy * 100:.1f}%"
@@ -333,7 +336,7 @@ def process_video_file(video_path, filename):
             for d in last_detections:
                 x, y, w, h = d['bbox']
                 detection_type = d.get('type', 'weed')
-                color = (46, 139, 87) if detection_type == 'crop' else (34, 87, 255)
+                color = (87, 139, 46) if detection_type == 'crop' else (34, 87, 255)
                 cv2.rectangle(overlay_frame, (x, y), (x + w, y + h), color, 3)
                 label_text = f"{detection_type.upper()} {d.get('confidence', 0) * 100:.1f}%"
                 cv2.putText(overlay_frame, label_text, (x, max(y - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
