@@ -157,9 +157,7 @@ def process_frame(frame):
             accuracy = confidences[i]
             # Classify as crop or weed and choose consistent colors
             detection_type = 'crop' if any(word in detected_label.lower() for word in ['crop', 'wheat', 'corn', 'soybean', 'rice', 'plant']) else 'weed'
-            # Use exact brand colors (OpenCV expects BGR)
-            # Crop green #2e8b57 -> RGB(46,139,87) => BGR(87,139,46)
-            # Weed orange/red #ff5722 -> RGB(255,87,34) => BGR(34,87,255)
+        
             color = (87, 139, 46) if detection_type == 'crop' else (34, 87, 255)
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 3)
